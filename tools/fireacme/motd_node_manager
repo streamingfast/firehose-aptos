@@ -1,0 +1,16 @@
+            _____         __
+           / __(_)______ / /  ___  ___ ___
+          / _// / __/ -_) _ \/ _ \(_-</ -_)
+         /_/ /_/_/  \__/_//_/\___/___/\__/
+
+Welcome to this node manager pod, common commands:
+ - Show version                       fireaptos --version
+
+Node manager commands (aptos-... <tab> to show all):
+ - Check if running                   aptos-is-running
+
+ - Debug Deep Mind logs for 30s       aptos-debug-deep-mind-30s
+ - Stop instance                      aptos-maintenance
+ - Start or restart instance          aptos-resume
+
+ - RPC Head Block                     aptos-rpc-head-block
