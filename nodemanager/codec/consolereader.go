@@ -2,13 +2,14 @@ package codec
 
 import (
 	"bufio"
+	"encoding/base64"
 	"fmt"
 	"io"
-	"math/big"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/golang/protobuf/proto"
 	"github.com/streamingfast/bstream"
 	"github.com/streamingfast/firehose-aptos/types"
 	pbaptos "github.com/streamingfast/firehose-aptos/types/pb/sf/aptos/type/v1"
@@ -20,9 +21,7 @@ import (
 type ConsoleReader struct {
 	lines chan string
 	close func()
-
-	ctx  *parseCtx
-	done chan interface{}
+	done  chan interface{}
 
 	logger *zap.Logger
 }
@@ -37,7 +36,6 @@ func NewConsoleReader(logger *zap.Logger, lines chan string) (*ConsoleReader, er
 	return l, nil
 }
 
-//todo: WTF?
 func (r *ConsoleReader) Done() <-chan interface{} {
 	return r.done
 }
@@ -80,25 +78,6 @@ func (s *parsingStats) inc(key string) {
 	s.data[k] = value
 }
 
-type parseCtx struct {
-	currentBlock *pbaptos.Block
-	stats        *parsingStats
-
-	logger *zap.Logger
-}
-
-func newContext(logger *zap.Logger, height uint64) *parseCtx {
-	return &parseCtx{
-		currentBlock: &pbaptos.Block{
-			Height:       height,
-			Transactions: []*pbaptos.Transaction{},
-		},
-		stats: newParsingStats(logger, height),
-
-		logger: logger,
-	}
-}
-
 func (r *ConsoleReader) ReadBlock() (out *bstream.Block, err error) {
 	block, err := r.next()
 	if err != nil {
@@ -109,16 +88,12 @@ func (r *ConsoleReader) ReadBlock() (out *bstream.Block, err error) {
 }
 
 const (
-	LogPrefix     = "DMLOG"
-	LogBeginBlock = "BLOCK_BEGIN"
-	LogBeginTrx   = "BEGIN_TRX"
-	LogBeginEvent = "TRX_BEGIN_EVENT"
-	LogEventAttr  = "TRX_EVENT_ATTR"
-	LogEndTrx     = "END_TRX"
-	LogEndBlock   = "BLOCK_END"
+	LogPrefix = "DMLOG"
+	LogInit   = "INIT"
+	LogTrx    = "TRX"
 )
 
-func (r *ConsoleReader) next() (out *pbaptos.Block, err error) {
+func (r *ConsoleReader) next() (out *pbaptos.Transaction, err error) {
 	for line := range r.lines {
 		if !strings.HasPrefix(line, LogPrefix) {
 			continue
@@ -136,17 +111,11 @@ func (r *ConsoleReader) next() (out *pbaptos.Block, err error) {
 
 		// Order the case from most occurring line prefix to least occurring
 		switch tokens[0] {
-		case LogBeginEvent:
-			err = r.ctx.eventBegin(tokens[1:])
-		case LogEventAttr:
-			err = r.ctx.eventAttr(tokens[1:])
-		case LogBeginTrx:
-			err = r.ctx.trxBegin(tokens[1:])
-		case LogBeginBlock:
-			err = r.blockBegin(tokens[1:])
-		case LogEndBlock:
+		case LogInit:
+			err = r.readInit(tokens[1:])
+		case LogTrx:
 			// This end the execution of the reading loop as we have a full block here
-			return r.ctx.readBlockEnd(tokens[1:])
+			return r.readTransaction(tokens[1:])
 		default:
 			if r.logger.Core().Enabled(zap.DebugLevel) {
 				r.logger.Debug("skipping unknown deep mind log line", zap.String("line", line))
@@ -188,166 +157,65 @@ func (r *ConsoleReader) buildScanner(reader io.Reader) *bufio.Scanner {
 }
 
 // Format:
-// DMLOG BLOCK_BEGIN <NUM>
-func (r *ConsoleReader) blockBegin(params []string) error {
-	if err := validateChunk(params, 1); err != nil {
-		return fmt.Errorf("invalid log line length: %w", err)
-	}
-
-	blockHeight, err := strconv.ParseUint(params[0], 10, 64)
-	if err != nil {
-		return fmt.Errorf("invalid block num: %w", err)
-	}
-
-	//Push new block meta
-	r.ctx = newContext(r.logger, blockHeight)
-	return nil
-}
-
-// Format:
-// DMLOG BLOCK_BEGIN <HASH> <TYPE> <FROM> <TO> <AMOUNT> <FEE> <SUCCESS>
-func (ctx *parseCtx) trxBegin(params []string) error {
-	if err := validateChunk(params, 7); err != nil {
-		return fmt.Errorf("invalid log line length: %w", err)
-	}
-	if ctx == nil {
-		return fmt.Errorf("did not process a BLOCK_BEGIN")
-	}
-
-	trx := &pbaptos.Transaction{
-		Type:     params[1],
-		Hash:     params[0],
-		Sender:   params[2],
-		Receiver: params[3],
-		Success:  params[6] == "true",
-		Events:   []*pbaptos.Event{},
-	}
-
-	v, ok := new(big.Int).SetString(params[4], 16)
-	if !ok {
-		return fmt.Errorf("unable to parse trx amount %s", params[4])
-	}
-	trx.Amount = &pbaptos.BigInt{Bytes: v.Bytes()}
-
-	v, ok = new(big.Int).SetString(params[5], 16)
-	if !ok {
-		return fmt.Errorf("unable to parse trx amount %s", params[4])
-	}
-	trx.Fee = &pbaptos.BigInt{Bytes: v.Bytes()}
-
-	ctx.currentBlock.Transactions = append(ctx.currentBlock.Transactions, trx)
-	return nil
-}
-
-// Format:
-// DMLOG TRX_BEGIN_EVENT <TRX_HASH> <TYPE>
-
-func (ctx *parseCtx) eventBegin(params []string) error {
-	if err := validateChunk(params, 2); err != nil {
-		return fmt.Errorf("invalid log line length: %w", err)
-	}
-	if ctx == nil {
-		return fmt.Errorf("did not process a BLOCK_BEGIN")
-	}
-	if len(ctx.currentBlock.Transactions) == 0 {
-		return fmt.Errorf("did not process a BEGIN_TRX")
-	}
-
-	trx := ctx.currentBlock.Transactions[len(ctx.currentBlock.Transactions)-1]
-	if trx.Hash != params[0] {
-		return fmt.Errorf("last transaction hash %q does not match the event trx hash %q", trx.Hash, params[0])
-	}
-
-	trx.Events = append(trx.Events, &pbaptos.Event{
-		Type:       params[1],
-		Attributes: []*pbaptos.Attribute{},
-	})
-
-	ctx.currentBlock.Transactions[len(ctx.currentBlock.Transactions)-1] = trx
-	return nil
-}
-
-// Format:
-// DMLOG TRX_EVENT_ATTR <TRX_HASH> <EVENT_INDEX> <KEY> <VALUE>
-func (ctx *parseCtx) eventAttr(params []string) error {
-	if err := validateChunk(params, 4); err != nil {
-		return fmt.Errorf("invalid log line length: %w", err)
-	}
-	if ctx == nil {
-		return fmt.Errorf("did not process a BLOCK_BEGIN")
-	}
-	if len(ctx.currentBlock.Transactions) == 0 {
-		return fmt.Errorf("did not process a BEGIN_TRX")
-	}
-
-	trx := ctx.currentBlock.Transactions[len(ctx.currentBlock.Transactions)-1]
-	if trx.Hash != params[0] {
-		return fmt.Errorf("last transaction hash %q does not match the event trx hash %q", trx.Hash, params[0])
-	}
-
-	eventIndex, err := strconv.ParseUint(params[1], 10, 64)
-	if err != nil {
-		return fmt.Errorf("invalid event index: %w", err)
-	}
-
-	if len(trx.Events) < int(eventIndex) {
-		return fmt.Errorf("length of events array does not match event index: %d", eventIndex)
-	}
-	event := trx.Events[eventIndex]
-	event.Attributes = append(event.Attributes, &pbaptos.Attribute{
-		Key:   params[2],
-		Value: params[3],
-	})
-	trx.Events[eventIndex] = event
-	ctx.currentBlock.Transactions[len(ctx.currentBlock.Transactions)-1] = trx
-	return nil
-}
-
-// Format:
-// DMLOG BLOCK_END <HEIGHT> <HASH> <PREV_HASH> <TIMESTAMP> <TRX-COUNT>
-func (ctx *parseCtx) readBlockEnd(params []string) (*pbaptos.Block, error) {
+// DMLOG INIT <client_name> <client_version> <fork> <firehose_major> <firehose_minor>
+func (r *ConsoleReader) readInit(params []string) error {
 	if err := validateChunk(params, 5); err != nil {
+		return fmt.Errorf("invalid log line length: %w", err)
+	}
+
+	clientName := params[0]
+	clientVersion := params[1]
+	fork := params[2]
+
+	firehoseMajor, err := strconv.ParseUint(params[3], 10, 64)
+	if err != nil {
+		return fmt.Errorf("invalid firehose major version %q: %w", params[3], err)
+	}
+
+	firehoseMinor, err := strconv.ParseUint(params[3], 10, 64)
+	if err != nil {
+		return fmt.Errorf("invalid firehose minor version %q: %w", params[4], err)
+	}
+
+	if firehoseMajor != 0 {
+		return fmt.Errorf("only able to consume firehose format with major version 0, got %d", firehoseMajor)
+	}
+
+	r.logger.Info("initialized firehose extractor consumer correclty",
+		zap.String("client_name", clientName),
+		zap.String("client_version", clientVersion),
+		zap.String("fork", fork),
+		zap.Uint64("firehose_major", firehoseMajor),
+		zap.Uint64("firehose_minor", firehoseMinor),
+	)
+
+	return nil
+}
+
+// Format:
+// DMLOG TRX <sf.aptos.type.v1.Transaction>
+func (r *ConsoleReader) readTransaction(params []string) (*pbaptos.Transaction, error) {
+	if err := validateChunk(params, 1); err != nil {
 		return nil, fmt.Errorf("invalid log line length: %w", err)
 	}
 
-	if ctx.currentBlock == nil {
-		return nil, fmt.Errorf("current block not set")
-	}
-
-	blockHeight, err := strconv.ParseUint(params[0], 10, 64)
+	out, err := base64.StdEncoding.DecodeString(params[0])
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse blockNum: %w", err)
-	}
-	if blockHeight != ctx.currentBlock.Height {
-		return nil, fmt.Errorf("end block height does not match active block height, got block height %d but current is block height %d", blockHeight, ctx.currentBlock.Height)
+		return nil, fmt.Errorf("read trx: invalid base64 value: %w", err)
 	}
 
-	trxCount, err := strconv.ParseUint(params[4], 10, 64)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse blockNum: %w", err)
+	transaction := &pbaptos.Transaction{}
+	if err := proto.Unmarshal(out, transaction); err != nil {
+		return nil, fmt.Errorf("read trx: invalid proto: %w", err)
 	}
 
-	if len(ctx.currentBlock.Transactions) != int(trxCount) {
-		return nil, fmt.Errorf("failed expected %d transaction count (had %d): %w", trxCount, len(ctx.currentBlock.Transactions), err)
-	}
-
-	timestamp, err := strconv.ParseUint(params[3], 10, 64)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse block timestamp: %w", err)
-	}
-
-	ctx.currentBlock.Hash = params[1]
-	ctx.currentBlock.PrevHash = params[2]
-	ctx.currentBlock.Timestamp = timestamp
-
-	ctx.logger.Debug("console reader read block",
-		zap.Uint64("height", ctx.currentBlock.Height),
-		zap.String("hash", ctx.currentBlock.Hash),
-		zap.String("prev_hash", ctx.currentBlock.PrevHash),
-		zap.Int("trx_count", len(ctx.currentBlock.Transactions)),
+	r.logger.Debug("console reader read transaction",
+		zap.Uint64("version", transaction.Version),
+		zap.String("hash", transaction.ID()),
+		zap.Uint64("block_height", transaction.BlockHeight),
 	)
 
-	return ctx.currentBlock, nil
+	return transaction, nil
 }
 
 func validateChunk(params []string, count int) error {

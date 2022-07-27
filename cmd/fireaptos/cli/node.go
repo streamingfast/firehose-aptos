@@ -33,6 +33,7 @@ func registerCommonNodeFlags(cmd *cobra.Command, flagPrefix string, managerAPIAd
 		searched for paths listed by the PATH environment variable (following operating system rules around PATH handling).
 	`))
 	cmd.Flags().String(flagPrefix+"data-dir", "{data-dir}/{node-role}/data", "Directory for node data ({node-role} is either extractor, peering or dev-miner)")
+	cmd.Flags().String(flagPrefix+"config-file", "aptos.yaml", "Path where to find the node's config file that is passed directly to the executable")
 	cmd.Flags().Bool(flagPrefix+"debug-deep-mind", false, "[DEV] Prints deep mind instrumentation logs to standard output, should be use for debugging purposes only")
 	cmd.Flags().Bool(flagPrefix+"log-to-zap", true, FlagDescription(`
 		When sets to 'true', all standard error output emitted by the invoked process defined via '%s'
@@ -93,6 +94,7 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 
 		nodePath := viper.GetString(flagPrefix + "path")
 		nodeDataDir := replaceNodeRole(kind, mustReplaceDataDir(sfDataDir, viper.GetString(flagPrefix+"data-dir")))
+		nodeConfigFile := mustReplaceDataDir(sfDataDir, viper.GetString(flagPrefix+"config-file"))
 
 		readinessMaxLatency := viper.GetDuration(flagPrefix + "readiness-max-latency")
 		debugDeepMind := viper.GetBool(flagPrefix + "debug-deep-mind")
@@ -103,6 +105,7 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 		arguments := viper.GetString(flagPrefix + "arguments")
 		nodeArguments, err := buildNodeArguments(
 			nodeDataDir,
+			nodeConfigFile,
 			kind,
 			arguments,
 		)
@@ -204,9 +207,9 @@ func (b *bootstrapper) Bootstrap() error {
 
 type nodeArgsByRole map[string]string
 
-func buildNodeArguments(nodeDataDir, nodeRole string, args string) ([]string, error) {
+func buildNodeArguments(nodeDataDir, nodeConfigFile, nodeRole string, args string) ([]string, error) {
 	typeRoles := nodeArgsByRole{
-		"extractor": "start --store-dir={node-data-dir} {extra-arg}",
+		"extractor": fmt.Sprintf("--config %s {extra-arg}", nodeConfigFile),
 	}
 
 	argsString, ok := typeRoles[nodeRole]

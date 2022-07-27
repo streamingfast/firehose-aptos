@@ -1,0 +1,12 @@
+start:
+  args:
+  - firehose
+  - merger
+  - extractor-node
+  - relayer
+  flags:
+    extractor-node-config-file: "./config/full_node.yaml"
+
+    # Temporary override for easier testing when not fully synced yet, in production, should not be set
+    firehose-real-time-tolerance: 999999999s
+    relayer-max-source-latency: 999999999s

@@ -25,20 +25,20 @@ const (
 	// and importantly, they should be different than the `node` ones below. Each chain
 	// usually have at least P2P and RPC ports. We suggest to use the standard port on the
 	// `node` values below and increment the `extractor` ones by 1.
-	ExtractorNodeP2PPort string = "30304"
-	ExtractorNodeRPCPort string = "8546"
+	ExtractorNodeP2PPort string = "6181"
+	ExtractorNodeRPCPort string = "8081"
 
 	// Those should be the port the native node is using for P2P and RPC respectively
 	// and importantly, they should be different than the `extractor` ones above. We suggest
 	// to use the standard port on the `node` values here directly.
-	NodeP2PPort string = "30303"
-	NodeRPCPort string = "8545"
+	NodeP2PPort string = "6180"
+	NodeRPCPort string = "8080"
 
 	// This should be the standard name of the executable that is usually used to
 	// sync the chain with the blockchain network. For example on Ethereum where
 	// our standard instrumentation if using the Geth client, value is `geth`, on EOSIO
 	// chain, it's `nodeos`.
-	ChainExecutableName = "dchain"
+	ChainExecutableName = "aptos-node"
 
 	//
 	/// Standard Values
