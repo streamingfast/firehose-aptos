@@ -7,7 +7,8 @@ start:
   flags:
     extractor-node-config-file: "config/full_node.yaml"
     extractor-node-genesis-file: "config/genesis.blob"
-    extractor-node-waypoint-file: "config/waypoint.txt"
+    extractor-node-validator-identity-file: "config/validator-identity.yaml"
+    extractor-node-vfn-identity-file: "config/vfn-identity.yaml"
 
     # Temporary override for easier testing when not fully synced yet, in production, should not be set
     firehose-real-time-tolerance: 999999999s

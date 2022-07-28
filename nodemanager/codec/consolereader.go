@@ -213,6 +213,9 @@ func (r *ConsoleReader) readTransaction(params []string) (*pbaptos.Transaction, 
 		zap.Uint64("version", transaction.Version),
 		zap.String("hash", transaction.ID()),
 		zap.Uint64("block_height", transaction.BlockHeight),
+		zap.Int32("timestamp_nanos", transaction.Timestamp.Nanos),
+		zap.Int64("timestamp_seconds", transaction.Timestamp.Seconds),
+		zap.Time("timestamp", transaction.Timestamp.AsTime()),
 	)
 
 	return transaction, nil

@@ -28,7 +28,7 @@ type Superviser struct {
 }
 
 func (s *Superviser) GetName() string {
-	return "dummy-chain"
+	return "aptos-node"
 }
 
 func NewSuperviser(

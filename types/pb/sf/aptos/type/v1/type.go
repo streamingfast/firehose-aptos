@@ -30,6 +30,18 @@ func (b *Transaction) PreviousID() string {
 	return hex.EncodeToString(previousID)
 }
 
+func (b *Transaction) LIBNum() uint64 {
+	number := b.Number()
+	if number <= bstream.GetProtocolFirstStreamableBlock {
+		return number
+	}
+
+	// Since there is no forks blocks on Aptos, I'm pretty sure that last irreversible block number
+	// is the block's number itself. However I'm not sure overall how the Firehose stack would react
+	// to LIBNum == Num so to play safe for now, previous block of current is irreversible.
+	return b.Number() - 1
+}
+
 func (b *Transaction) Time() time.Time {
-	return time.Unix(0, int64(b.Timestamp)).UTC()
+	return b.Timestamp.AsTime()
 }

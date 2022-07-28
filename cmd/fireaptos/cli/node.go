@@ -1,7 +1,10 @@
 package cli
 
 import (
+	"bytes"
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -34,6 +37,10 @@ func registerCommonNodeFlags(cmd *cobra.Command, flagPrefix string, managerAPIAd
 	`))
 	cmd.Flags().String(flagPrefix+"data-dir", "{data-dir}/{node-role}/data", "Directory for node data ({node-role} is either extractor, peering or dev-miner)")
 	cmd.Flags().String(flagPrefix+"config-file", "aptos.yaml", "Path where to find the node's config file that is passed directly to the executable")
+	cmd.Flags().String(flagPrefix+"genesis-file", "", "Path where to find the node's genesis.blob file for the network, if defined, going to be copied inside node data directory automatically and '{genesis-file}' will be replaced in config automatically to this value.")
+	cmd.Flags().String(flagPrefix+"waypoint-file", "", "Path where to find the node's waypoint.txt file for the network, if defined, going to be copied inside node data directory automatically and '{waypoint-file}' will be replaced in config automatically to this value.")
+	cmd.Flags().String(flagPrefix+"validator-identity-file", "", "Path where to find the node's validator-identity.yaml file for the network, if defined, going to be copied inside node data directory automatically and '{validator-identity-file}' will be replaced in config automatically to this value.")
+	cmd.Flags().String(flagPrefix+"vfn-identity-file", "", "Path where to find the node's vfn-identity.yaml file for the network, if defined, going to be copied inside node data directory automatically and '{vfn-identity-file}' will be replaced in config automatically to this value.")
 	cmd.Flags().Bool(flagPrefix+"debug-deep-mind", false, "[DEV] Prints deep mind instrumentation logs to standard output, should be use for debugging purposes only")
 	cmd.Flags().Bool(flagPrefix+"log-to-zap", true, FlagDescription(`
 		When sets to 'true', all standard error output emitted by the invoked process defined via '%s'
@@ -95,6 +102,18 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 		nodePath := viper.GetString(flagPrefix + "path")
 		nodeDataDir := replaceNodeRole(kind, mustReplaceDataDir(sfDataDir, viper.GetString(flagPrefix+"data-dir")))
 		nodeConfigFile := mustReplaceDataDir(sfDataDir, viper.GetString(flagPrefix+"config-file"))
+		nodeGenesisFile := mustReplaceDataDir(sfDataDir, viper.GetString(flagPrefix+"genesis-file"))
+		nodeWaypointFile := mustReplaceDataDir(sfDataDir, viper.GetString(flagPrefix+"waypoint-file"))
+		nodeValidatorIdentityFile := mustReplaceDataDir(sfDataDir, viper.GetString(flagPrefix+"validator-identity-file"))
+		nodeVFNIdentityFile := mustReplaceDataDir(sfDataDir, viper.GetString(flagPrefix+"vfn-identity-file"))
+
+		// The aptos-node config file does not like relative path for some files. On local deployment, it's not always easy to
+		// share a config for which absolute path is specified. So instead we copy most of the required resource to node's data
+		// directory (similar to what `aptos-node node run-local-testnet` does). In this folder, we put the fully the resolved
+		// config file. The config file is "templated" and `{data-dir}`, `{genesis-file}`, `{waypoint-file}`, `{validator-identity-file}`
+		// and `{vfn-identity-file}` are replaced in the config by the value pass in parameter here (if defined). The
+		// `bootstrapper` is responsible of this replacement as well as placing the resolved config in the right location.
+		resolvedNodeConfigFile := filepath.Join(nodeDataDir, "node.yaml")
 
 		readinessMaxLatency := viper.GetDuration(flagPrefix + "readiness-max-latency")
 		debugDeepMind := viper.GetBool(flagPrefix + "debug-deep-mind")
@@ -104,8 +123,9 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 
 		arguments := viper.GetString(flagPrefix + "arguments")
 		nodeArguments, err := buildNodeArguments(
+			appLogger,
 			nodeDataDir,
-			nodeConfigFile,
+			resolvedNodeConfigFile,
 			kind,
 			arguments,
 		)
@@ -126,7 +146,14 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 		)
 
 		bootstrapper := &bootstrapper{
-			nodeDataDir: nodeDataDir,
+			nodeDataDir:               nodeDataDir,
+			nodeConfigFile:            nodeConfigFile,
+			resolvedNodeConfigFile:    resolvedNodeConfigFile,
+			nodeGenesisFile:           nodeGenesisFile,
+			nodeWaypointFile:          nodeWaypointFile,
+			nodeValidatorIdentityFile: nodeValidatorIdentityFile,
+			nodeVFNIdentityFile:       nodeVFNIdentityFile,
+			logger:                    appLogger,
 		}
 
 		chainOperator, err := operator.New(
@@ -197,19 +224,91 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 }
 
 type bootstrapper struct {
-	nodeDataDir string
+	nodeDataDir               string
+	nodeConfigFile            string
+	resolvedNodeConfigFile    string
+	nodeGenesisFile           string
+	nodeWaypointFile          string
+	nodeValidatorIdentityFile string
+	nodeVFNIdentityFile       string
+	logger                    *zap.Logger
 }
 
 func (b *bootstrapper) Bootstrap() error {
-	// You can copy coniguration files here into your working data dir to run the node off of
+	b.logger.Info("bootstraping node's configuration")
+
+	if err := makeDirs([]string{b.nodeDataDir}); err != nil {
+		return fmt.Errorf(`create "fireaptos" inside node's data dir: %w`, err)
+	}
+
+	configContent, err := os.ReadFile(b.nodeConfigFile)
+	if err != nil {
+		return fmt.Errorf("read config content: %w", err)
+	}
+
+	dataDir := tryToMakeAbsolutePath(b.logger, b.nodeDataDir)
+
+	b.logger.Info(`replacing occurrences of "{data-dir}" in config file`, zap.String("config_file", b.nodeConfigFile), zap.String("replacement", dataDir))
+	configContent = bytes.ReplaceAll(configContent, []byte("{data-dir}"), []byte(dataDir))
+
+	if b.nodeGenesisFile != "" {
+		genesisFile := tryToMakeAbsolutePath(b.logger, b.nodeGenesisFile)
+
+		b.logger.Info(`replacing occurrences of "{genesis-file}" in config file`, zap.String("config_file", b.nodeConfigFile), zap.String("replacement", genesisFile))
+		configContent = bytes.ReplaceAll(configContent, []byte("{genesis-file}"), []byte(genesisFile))
+	}
+
+	if b.nodeWaypointFile != "" {
+		waypointFile := tryToMakeAbsolutePath(b.logger, b.nodeWaypointFile)
+
+		b.logger.Info(`replacing occurrences of "{waypoint-file}" in config file`, zap.String("config_file", b.nodeConfigFile), zap.String("replacement", waypointFile))
+		configContent = bytes.ReplaceAll(configContent, []byte("{waypoint-file}"), []byte(waypointFile))
+	}
+
+	if b.nodeValidatorIdentityFile != "" {
+		validtorIdentityFile := tryToMakeAbsolutePath(b.logger, b.nodeValidatorIdentityFile)
+
+		b.logger.Info(`replacing occurrences of "{validator-identity-file}" in config file`, zap.String("config_file", b.nodeConfigFile), zap.String("replacement", validtorIdentityFile))
+		configContent = bytes.ReplaceAll(configContent, []byte("{validator-identity-file}"), []byte(validtorIdentityFile))
+	}
+
+	if b.nodeVFNIdentityFile != "" {
+		vfnIdentityFile := tryToMakeAbsolutePath(b.logger, b.nodeVFNIdentityFile)
+
+		b.logger.Info(`replacing occurrences of "{vfn-identity-file}" in config file`, zap.String("config_file", b.nodeConfigFile), zap.String("replacement", vfnIdentityFile))
+		configContent = bytes.ReplaceAll(configContent, []byte("{vfn-identity-file}"), []byte(vfnIdentityFile))
+	}
+
+	if err := os.WriteFile(b.resolvedNodeConfigFile, configContent, os.ModePerm); err != nil {
+		return fmt.Errorf("write resolved config file: %w", err)
+	}
+
 	return nil
+}
+
+func tryToMakeAbsolutePath(logger *zap.Logger, path string) string {
+	out, err := filepath.Abs(path)
+	if err == nil {
+		return out
+	}
+
+	logger.Warn("unable to make path absolute", zap.String("path", path), zap.Error(err))
+	return path
 }
 
 type nodeArgsByRole map[string]string
 
-func buildNodeArguments(nodeDataDir, nodeConfigFile, nodeRole string, args string) ([]string, error) {
+func buildNodeArguments(logger *zap.Logger, nodeDataDir, nodeConfigFile, nodeRole string, args string) ([]string, error) {
+	// Seems aptos-node does not really like relative path for the config, at least when starting through extractor component,
+	// let's resolve it right away and it will help anyway if the relative path is wrong regarding where we start the actual process.
+	resolvedNodeConfigFile, err := filepath.Abs(nodeConfigFile)
+	if err != nil {
+		logger.Warn("unable to make path absolute", zap.String("path", nodeConfigFile), zap.Error(err))
+		resolvedNodeConfigFile = nodeConfigFile
+	}
+
 	typeRoles := nodeArgsByRole{
-		"extractor": fmt.Sprintf("--config %s {extra-arg}", nodeConfigFile),
+		"extractor": fmt.Sprintf("--config %s {extra-arg}", resolvedNodeConfigFile),
 	}
 
 	argsString, ok := typeRoles[nodeRole]
