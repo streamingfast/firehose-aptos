@@ -34,7 +34,8 @@ func TestParseFromFile(t *testing.T) {
 		deepMindFile     string
 		expectedPanicErr error
 	}{
-		{"testdata/deep-mind.dmlog", nil},
+		// FIXME: Re-enable test when a more stable instrumentation exists.
+		// {"testdata/deep-mind.dmlog", nil},
 	}
 
 	for _, test := range tests {
