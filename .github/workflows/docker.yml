@@ -46,6 +46,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
+      - uses: actions/cache@v3
+        id: cache-rust
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
       - name: Branch name
         id: extract_branch
         shell: bash

@@ -1,5 +1,18 @@
 # syntax=docker/dockerfile:1.2
 
+# TODO: Use pre-built images once they are available to we avoid all this cloning/building
+FROM rust:bullseye as aptos-builder
+ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
+RUN --mount=type=cache,target=/var/cache/apk \
+    --mount=type=cache,target=/home/rust/.cargo \
+    rustup component add rustfmt \
+    # Use branch add_sf_stream_thread until it's merged upstream and in which case it will not be required anymore
+    && git clone https://github.com/aptos-labs/aptos-core.git -b add_sf_stream_thread \
+    && cd aptos-core \
+    # In `debug` mode for now just to speed up compilation because I don't want to wait too long for it
+    && cargo build --debug \
+    && cp target/debug/aptos-node /home/rust/
+
 FROM ubuntu:20.04
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
@@ -15,6 +28,7 @@ RUN mkdir /tmp/wasmer-install && cd /tmp/wasmer-install && \
     mv lib/libwasmer.a lib/libwasmer.so /usr/lib/ && cd / && rm -rf /tmp/wasmer-install
 
 ADD /fireaptos /app/fireaptos
+COPY --from=aptos-builder /home/rust/aptos-node /app/aptos-node
 
 COPY tools/fireaptos/motd_generic /etc/
 COPY tools/fireaptos/motd_node_manager /etc/
