@@ -1,8 +1,9 @@
 # syntax=docker/dockerfile:1.2
 
 # TODO: Use pre-built images once they are available to we avoid all this cloning/building
-FROM rust:bullseye as aptos-builder
+FROM rust:1.61-buster as aptos-builder
 ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
+RUN apt-get update && apt-get install -y cmake curl clang git pkg-config libssl-dev libpq-dev
 RUN --mount=type=cache,target=/var/cache/apk \
     --mount=type=cache,target=/home/rust/.cargo \
     rustup component add rustfmt \
@@ -10,7 +11,7 @@ RUN --mount=type=cache,target=/var/cache/apk \
     && git clone https://github.com/aptos-labs/aptos-core.git -b add_sf_stream_thread \
     && cd aptos-core \
     # In `debug` mode for now just to speed up compilation because I don't want to wait too long for it
-    && cargo build \
+    && RUSTFLAGS="--cfg tokio_unstable" cargo build \
     && cp target/debug/aptos-node /home/rust/
 
 FROM ubuntu:20.04
