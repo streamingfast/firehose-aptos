@@ -10,9 +10,8 @@ RUN --mount=type=cache,target=/var/cache/apk \
     # Use branch add_sf_stream_thread until it's merged upstream and in which case it will not be required anymore
     && git clone https://github.com/aptos-labs/aptos-core.git -b add_sf_stream_thread \
     && cd aptos-core \
-    # In `debug` mode for now just to speed up compilation because I don't want to wait too long for it
-    && RUSTFLAGS="--cfg tokio_unstable" cargo build -p aptos-node \
-    && cp target/debug/aptos-node /home/rust/
+    && RUSTFLAGS="--cfg tokio_unstable" cargo build --release -p aptos-node \
+    && cp target/release/aptos-node /home/rust/
 
 FROM ubuntu:20.04
 

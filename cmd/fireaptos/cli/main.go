@@ -6,16 +6,18 @@ import (
 	"time"
 
 	// Needs to be in this file which is the main entry of wrapper binary
+	_ "github.com/streamingfast/dauth/authenticator/gcp"    // auth cloud-gcp plugin
 	_ "github.com/streamingfast/dauth/authenticator/null"   // auth null plugin
 	_ "github.com/streamingfast/dauth/authenticator/secret" // auth secret/hard-coded plugin
 	_ "github.com/streamingfast/dauth/ratelimiter/null"     // ratelimiter plugin
-	"github.com/streamingfast/logging"
+	_ "github.com/streamingfast/firehose-aptos/types"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/streamingfast/derr"
 	"github.com/streamingfast/dlauncher/flags"
 	"github.com/streamingfast/dlauncher/launcher"
+	"github.com/streamingfast/logging"
 	"go.uber.org/zap"
 )
 
