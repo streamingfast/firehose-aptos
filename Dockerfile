@@ -11,7 +11,7 @@ RUN --mount=type=cache,target=/var/cache/apk \
     && git clone https://github.com/aptos-labs/aptos-core.git -b add_sf_stream_thread \
     && cd aptos-core \
     # In `debug` mode for now just to speed up compilation because I don't want to wait too long for it
-    && RUSTFLAGS="--cfg tokio_unstable" cargo build \
+    && RUSTFLAGS="--cfg tokio_unstable" cargo build -p aptos-node \
     && cp target/debug/aptos-node /home/rust/
 
 FROM ubuntu:20.04
