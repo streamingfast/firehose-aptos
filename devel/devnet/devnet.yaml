@@ -6,6 +6,7 @@ start:
   - relayer
   flags:
     extractor-node-config-file: "config/full_node.yaml"
+    extractor-node-log-to-zap: false
     extractor-node-genesis-file: "config/genesis.blob"
     extractor-node-waypoint-file: "config/waypoint.txt"
 

@@ -44,7 +44,7 @@ func init() {
 		cmd.Flags().Int("common-blocks-cache-max-recent-entry-bytes", 21474836480, FlagDescription(`
 			[COMMON] Blocks cache max size in bytes of the most recently used blocks, after the limit is reached, blocks are evicted from the cache.
 		`))
-		cmd.Flags().Int("common-blocks-cache-entry-max-by-age-bytes", 21474836480, FlagDescription(`
+		cmd.Flags().Int("common-blocks-cache-max-entry-by-age-bytes", 21474836480, FlagDescription(`
 			[COMMON] Blocks cache max size in bytes of the earliest used blocks, after the limit is reached, blocks are evicted from the cache.
 		`))
 
