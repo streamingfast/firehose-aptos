@@ -65,8 +65,6 @@ func NewSuperviser(
 }
 
 func (s *Superviser) GetCommand() string {
-	adjustedArguments := append(s.arguments, "")
-
 	return s.binary + " " + strings.Join(s.arguments, " ")
 }
 
