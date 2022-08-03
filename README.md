@@ -19,12 +19,10 @@
 
 ## How to modify protobuf
 1. Ensure that protoc and protoc-gen-go are installed
-    a. `brew install protoc && brew install protoc-gen-go`
+    a. `brew install protoc && brew install protoc-gen-go && brew install protoc-gen-go-grpc`
 2. Generate go file from modified protobuf
-    a. `protoc --go_out=paths=source_relative:. proto/sf/aptos/type/v1/type.proto`
-    b. This should've created type.pb.go file in the same folder as type.proto. Move it into types/pb/sf/aptos/type/v1/
-3. Something???
-4. Run firehose
+    a. `types/pb/generate.sh`
+3. Run firehose
     a.`./devel/localnet/start.sh -c`
 
 ## Release
