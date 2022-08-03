@@ -4,6 +4,29 @@
 
 # Usage
 
+## Setup
+1. Build the aptos node and bind aptos-node to the path
+    a. Follow instructions for devnet
+    b. In aptos-core repo, run `cd aptos-node` and `cargo install --path .`
+2. Update devel/devnet/config/full_node.yaml with correct configs (back in firehose-aptos repo)
+    a. Update data_dir, from_file, and genesis_file_location with correct paths. 
+    b. Make sure that api address is correct
+3. Build spkg file
+    a. install substreams
+    b. `substreams pack substreams/substreams.yaml`
+4. Run firehose
+    a. `./devel/localnet/start.sh -c`
+
+## How to modify protobuf
+1. Ensure that protoc and protoc-gen-go are installed
+    a. `brew install protoc && brew install protoc-gen-go`
+2. Generate go file from modified protobuf
+    a. `protoc --go_out=paths=source_relative:. proto/sf/aptos/type/v1/type.proto`
+    b. This should've created type.pb.go file in the same folder as type.proto. Move it into types/pb/sf/aptos/type/v1/
+3. Something???
+4. Run firehose
+    a.`./devel/localnet/start.sh -c`
+
 ## Release
 
 Use the `./bin/release.sh` Bash script to perform a new release. It will ask you questions
