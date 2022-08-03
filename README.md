@@ -5,25 +5,66 @@
 # Usage
 
 ## Setup
-1. Build the aptos node and bind aptos-node to the path
-    a. Follow instructions for devnet
-    b. In aptos-core repo, run `cd aptos-node` and `cargo install --path .`
-2. Update devel/devnet/config/full_node.yaml with correct configs (back in firehose-aptos repo)
-    a. Update data_dir, from_file, and genesis_file_location with correct paths. 
-    b. Make sure that api address is correct
-3. Build spkg file
-    a. install substreams
-    b. `substreams pack substreams/substreams.yaml`
-4. Run firehose
-    a. `./devel/localnet/start.sh -c`
 
-## How to modify protobuf
-1. Ensure that protoc and protoc-gen-go are installed
-    a. `brew install protoc && brew install protoc-gen-go && brew install protoc-gen-go-grpc`
-2. Generate go file from modified protobuf
-    a. `types/pb/generate.sh`
-3. Run firehose
-    a.`./devel/localnet/start.sh -c`
+1. Build the `aptos-node` binary and bind `aptos-node` to the `PATH`
+    - Follow instructions for `devnet`
+    - In `aptos-core` repo, run `cd aptos-node` and `cargo install --path .`
+1. Run firehose
+    ```
+    ./devel/localnet/start.sh -c
+    ```
+
+    And ensure blocks are flowing:
+
+    ```
+    grpcurl -plaintext -import-path ../proto -import-path ./proto -proto sf/aptos/type/v1/type.proto -proto sf/firehose/v2/firehose.proto -d '{"start_block_num": 0}' localhost:18015 sf.firehose.v2.Stream.Blocks
+    ```
+
+## Re-generate Protobuf Definitions
+
+1. Ensure that `protoc` is installed:
+   ```
+   brew install protoc
+   ```
+
+1. Ensure that `protoc-gen-go` and `protoc-gen-go-grpc` are installed and at the correct version
+    ```
+    go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.25.0
+    go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.1.0
+    ```
+
+1. Have a copy of https://github.com/streamingfast/proto cloned sibling of this project:
+    ```
+    # Assuming you are in `firehose-aptos` root directory directly
+    cd ..
+    git clone https://github.com/streamingfast/proto.git
+    ls
+    # Should list both firehose-aptos and proto
+    ```
+
+1. Generate go file from modified protobuf
+
+   ```
+   ./types/pb/generate.sh`
+   ```
+
+1. Run tests and fix any problems:
+
+    ```
+    ./bin/test.sh
+    ```
+
+1. Run `localnet` config to ensure everything is working as expected:
+
+    ```
+    ./devel/localnet/start.sh -c
+    ```
+
+    And ensure blocks are flowing:
+
+    ```
+    grpcurl -plaintext -import-path ../proto -import-path ./proto -proto sf/aptos/type/v1/type.proto -proto sf/firehose/v2/firehose.proto -d '{"start_block_num": 0}' localhost:18015 sf.firehose.v2.Stream.Blocks
+    ```
 
 ## Release
 
