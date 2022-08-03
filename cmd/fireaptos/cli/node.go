@@ -138,7 +138,6 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 			nodePath,
 			nodeArguments,
 			nodeDataDir,
-			metricsAndReadinessManager.UpdateHeadBlock,
 			debugDeepMind,
 			logToZap,
 			appLogger,

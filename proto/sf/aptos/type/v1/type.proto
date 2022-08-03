@@ -35,6 +35,13 @@ message Transaction {
 
 }
 
+// TransactionTrimmed is a real Transaction with most of the fields removed so that
+// we can easily decode only the few fields that we have interest in in certain situations.
+message TransactionTrimmed {
+  google.protobuf.Timestamp timestamp = 1;
+  uint64 version = 2;
+}
+
 message BlockMetadataTransaction {
   string id = 1;
   uint64 round = 2;

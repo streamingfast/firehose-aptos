@@ -15,7 +15,14 @@
 package cli
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"os"
+	"path/filepath"
+
 	"github.com/spf13/cobra"
+	"github.com/streamingfast/bstream"
 	"github.com/streamingfast/bstream/blockstream"
 	"github.com/streamingfast/firehose-aptos/nodemanager/codec"
 	"github.com/streamingfast/logging"
@@ -57,6 +64,22 @@ func getMindreaderLogPlugin(
 	appLogger *zap.Logger,
 	appTracer logging.Tracer,
 ) (*mindreader.MindReaderPlugin, error) {
+	if err := makeDirs([]string{workingDir}); err != nil {
+		return nil, fmt.Errorf("creating working directory: %w", err)
+	}
+
+	syncStateFile := filepath.Join(workingDir, "sync_state.json")
+
+	// We never close the sync state file but I don't think it's a problem. It's meant
+	// to be ever open so that's not a problem. There is still risk of an abrupt process
+	// closing that would close the file descriptor in the middle of a write. But even there,
+	// we write so less data in bytes that I'm pretty sure the write is going to be done in atomic
+	// fashion in one swift so we are confident that doing how we do it is safe here.
+	syncStateFileWriter, err := os.Create(syncStateFile)
+	if err != nil {
+		return nil, fmt.Errorf("open sync state file for writing: %w", err)
+	}
+
 	consoleReaderFactory := func(lines chan string) (mindreader.ConsolerReader, error) {
 		return codec.NewConsoleReader(appLogger, lines)
 	}
@@ -68,7 +91,27 @@ func getMindreaderLogPlugin(
 		batchStartBlockNum,
 		batchStopBlockNum,
 		blocksChanCapacity,
-		metricsAndReadinessManager.UpdateHeadBlock,
+		func(block *bstream.Block) error {
+			if err := metricsAndReadinessManager.UpdateHeadBlock(block); err != nil {
+				return fmt.Errorf("metrics update head block: %w", err)
+			}
+
+			if _, err := syncStateFileWriter.Seek(0, io.SeekStart); err != nil {
+				return fmt.Errorf("reset sync state file to offset 0: %w", err)
+			}
+
+			err := json.NewEncoder(syncStateFileWriter).Encode(extractorNodeSyncState{
+				// FIXME: Right now we have the real version because our "Block" are actual Aptos transaction
+				// but if we change so that a `Block` becomes a set of transactions, then we need to change
+				// here.
+				Version: block.Num(),
+			})
+			if err != nil {
+				return fmt.Errorf("encode sync state to file: %w", err)
+			}
+
+			return nil
+		},
 		func(error) {
 			operatorShutdownFunc(nil)
 		},
@@ -77,4 +120,8 @@ func getMindreaderLogPlugin(
 		appLogger,
 		appTracer,
 	)
+}
+
+type extractorNodeSyncState struct {
+	Version uint64 `json:"last_seen_version"`
 }
