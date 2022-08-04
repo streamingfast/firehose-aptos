@@ -1,16 +1,8 @@
 # syntax=docker/dockerfile:1.2
 
-# TODO: Use pre-built images once they are available to we avoid all this cloning/building
-FROM rust:1.61-buster as aptos-builder
-ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
-RUN apt-get update && apt-get install -y cmake curl clang git pkg-config libssl-dev libpq-dev
-RUN --mount=type=cache,target=/var/cache/apk \
-    --mount=type=cache,target=/home/rust/.cargo \
-    rustup component add rustfmt \
-    && git clone https://github.com/aptos-labs/aptos-core.git \
-    && cd aptos-core \
-    && RUSTFLAGS="--cfg tokio_unstable" cargo build --release -p aptos-node \
-    && cp target/release/aptos-node /home/rust/
+ARG APTOS_VERSION=nightly
+
+FROM aptoslab/validator:$APTOS_VERSION as chain
 
 FROM ubuntu:20.04
 
@@ -27,7 +19,7 @@ RUN mkdir /tmp/wasmer-install && cd /tmp/wasmer-install && \
     mv lib/libwasmer.a lib/libwasmer.so /usr/lib/ && cd / && rm -rf /tmp/wasmer-install
 
 ADD /fireaptos /app/fireaptos
-COPY --from=aptos-builder /home/rust/aptos-node /app/aptos-node
+COPY --from=chain /usr/local/bin/aptos-node /app/aptos-node
 
 COPY tools/fireaptos/motd_generic /etc/
 COPY tools/fireaptos/motd_node_manager /etc/
