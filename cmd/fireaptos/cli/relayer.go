@@ -18,7 +18,6 @@ func init() {
 		RegisterFlags: func(cmd *cobra.Command) error {
 			cmd.Flags().String("relayer-grpc-listen-addr", RelayerServingAddr, "Address to listen for incoming gRPC requests")
 			cmd.Flags().StringSlice("relayer-source", []string{ExtractorNodeGRPCAddr}, "List of live sources (extractor(s)) to connect to for live block feeds (repeat flag as needed)")
-			cmd.Flags().Int("relayer-buffer-size", 300, "number of blocks that will be kept and sent immediately on connection")
 			cmd.Flags().Duration("relayer-max-source-latency", 10*time.Minute, "max latency tolerated to connect to a source")
 			return nil
 		},
@@ -29,7 +28,6 @@ func init() {
 				SourcesAddr:      viper.GetStringSlice("relayer-source"),
 				OneBlocksURL:     MustReplaceDataDir(sfDataDir, viper.GetString("common-one-blocks-store-url")),
 				GRPCListenAddr:   viper.GetString("relayer-grpc-listen-addr"),
-				BufferSize:       viper.GetInt("relayer-buffer-size"),
 				MaxSourceLatency: viper.GetDuration("relayer-max-source-latency"),
 			}), nil
 		},
