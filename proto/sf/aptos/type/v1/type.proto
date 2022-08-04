@@ -1,16 +1,13 @@
 // Copyright (c) Aptos
 // SPDX-License-Identifier: Apache-2.0
 
-// This is a copy of Protobuf definitions found at https://github.com/aptos-labs/aptos-core/blob/main/sf-stream/src/protos/extractor.proto
-// to make it easier.
-
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/streamingfast/firehose-aptos/types/pb/sf/aptos/type/v1;pbaptos";
 
-// Transaction is acutally right what will be transported inside the Firehose's Block envloppe.
+// Transaction is actually right what will be transported inside the Firehose's Block envelope.
 // meaning we get a 1 transaction == 1 block mapping.
 message Transaction {
   google.protobuf.Timestamp timestamp = 1;
@@ -34,7 +31,6 @@ message Transaction {
     StateCheckpointTransaction state_checkpoint = 9;
     UserTransaction user = 10;
   }
-
 }
 
 // TransactionTrimmed is a real Transaction with most of the fields removed so that
@@ -283,32 +279,34 @@ message MoveFunctionGenericTypeParam {
   repeated MoveAbility constraints = 1;
 }
 
+enum MoveTypes {
+  Bool = 0;
+  U8 = 1;
+  U64 = 2;
+  U128 = 3;
+  Address = 4;
+  Signer = 5;
+  Vector = 6; // { items: Box<MoveType> },
+  Struct = 7; //(MoveStructTag),
+  GenericTypeParam = 8; // { index: u16 },
+  Reference = 9; // { mutable: bool, to: Box<MoveType> },
+  Unparsable = 10; //(String),
+}
+
 message MoveType{
-  enum Type {
-    Bool = 0;
-    U8 = 1;
-    U64 = 2;
-    U128 = 3;
-    Address = 4;
-    Signer = 5;
-    Vector = 6; // { items: Box<MoveType> },
-    Struct = 7; //(MoveStructTag),
-    GenericTypeParam = 8; // { index: u16 },
-    Reference = 9; // { mutable: bool, to: Box<MoveType> },
-    Unparsable = 10; //(String),
-  }
+
   message ReferenceType {
     bool mutable = 1;
     MoveType to = 2;
   }
 
-  MoveType.Type type = 1;
-  oneof content{
-    MoveType vector_content = 3;
-    MoveStructTag struct_content = 4;
-    uint32 generic_type_param_index_content = 5;
-    ReferenceType reference_content = 6;
-    string unparsable_content = 7;
+  MoveTypes type = 1;
+  oneof content {
+    MoveType vector = 3;
+    MoveStructTag struct = 4;
+    uint32 generic_type_param_index = 5;
+    ReferenceType reference = 6;
+    string unparsable = 7;
   }
 }
 

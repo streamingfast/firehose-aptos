@@ -60,6 +60,7 @@ func getMindreaderLogPlugin(
 	blocksChanCapacity int,
 	oneBlockFileSuffix string,
 	operatorShutdownFunc func(error),
+	onLastBlockSeen func(uint64),
 	metricsAndReadinessManager *nodeManager.MetricsAndReadinessManager,
 	appLogger *zap.Logger,
 	appTracer logging.Tracer,
@@ -84,34 +85,14 @@ func getMindreaderLogPlugin(
 		return codec.NewConsoleReader(appLogger, lines)
 	}
 
-	return mindreader.NewMindReaderPlugin(
+	plugin, err := mindreader.NewMindReaderPlugin(
 		oneBlocksStoreURL,
 		workingDir,
 		consoleReaderFactory,
 		batchStartBlockNum,
 		batchStopBlockNum,
 		blocksChanCapacity,
-		func(block *bstream.Block) error {
-			if err := metricsAndReadinessManager.UpdateHeadBlock(block); err != nil {
-				return fmt.Errorf("metrics update head block: %w", err)
-			}
-
-			if _, err := syncStateFileWriter.Seek(0, io.SeekStart); err != nil {
-				return fmt.Errorf("reset sync state file to offset 0: %w", err)
-			}
-
-			err := json.NewEncoder(syncStateFileWriter).Encode(extractorNodeSyncState{
-				// FIXME: Right now we have the real version because our "Block" are actual Aptos transaction
-				// but if we change so that a `Block` becomes a set of transactions, then we need to change
-				// here.
-				Version: block.Num(),
-			})
-			if err != nil {
-				return fmt.Errorf("encode sync state to file: %w", err)
-			}
-
-			return nil
-		},
+		metricsAndReadinessManager.UpdateHeadBlock,
 		func(error) {
 			operatorShutdownFunc(nil)
 		},
@@ -120,8 +101,46 @@ func getMindreaderLogPlugin(
 		appLogger,
 		appTracer,
 	)
+	if err != nil {
+		return nil, fmt.Errorf("new mindreader plugin: %w", err)
+	}
+
+	plugin.OnBlockWritten(func(block *bstream.Block) error {
+		if _, err := syncStateFileWriter.Seek(0, io.SeekStart); err != nil {
+			return fmt.Errorf("reset sync state file to offset 0: %w", err)
+		}
+
+		err := json.NewEncoder(syncStateFileWriter).Encode(extractorNodeSyncState{
+			// FIXME: Right now we have the real version because our "Block" are actual Aptos transaction
+			// but if we change so that a `Block` becomes a set of transactions, then we need to change
+			// here.
+			Version: block.Num(),
+		})
+		if err != nil {
+			return fmt.Errorf("encode sync state to file: %w", err)
+		}
+
+		onLastBlockSeen(block.Num())
+
+		return nil
+	})
+
+	return plugin, nil
 }
 
 type extractorNodeSyncState struct {
 	Version uint64 `json:"last_seen_version"`
+}
+
+func readNodeSyncState(path string) (state *extractorNodeSyncState, err error) {
+	content, err := os.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("open file: %w", err)
+	}
+
+	if err := json.Unmarshal(content, &state); err != nil {
+		return nil, fmt.Errorf("unmarshal file: %w", err)
+	}
+
+	return state, nil
 }

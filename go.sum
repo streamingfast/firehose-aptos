@@ -600,6 +600,8 @@ github.com/streamingfast/node-manager v0.0.2-0.20220803133948-bebb28c2e31d h1:lK
 github.com/streamingfast/node-manager v0.0.2-0.20220803133948-bebb28c2e31d/go.mod h1:SlfQf3TwkX591DmmeBL2hrG1H/cz7p2ndl0JdE5+W8A=
 github.com/streamingfast/node-manager v0.0.2-0.20220803134516-f52e3f0817c5 h1:ehEoqwZp87oinCHArb6aOVxlvOXGjDaPuqWFmq5IpwM=
 github.com/streamingfast/node-manager v0.0.2-0.20220803134516-f52e3f0817c5/go.mod h1:SlfQf3TwkX591DmmeBL2hrG1H/cz7p2ndl0JdE5+W8A=
+github.com/streamingfast/node-manager v0.0.2-0.20220804015313-01ef0ea2678c h1:+/CHGxHvZGGjldmd5OTAW9zZUtcoSqHxW1hyxxDSckw=
+github.com/streamingfast/node-manager v0.0.2-0.20220804015313-01ef0ea2678c/go.mod h1:SlfQf3TwkX591DmmeBL2hrG1H/cz7p2ndl0JdE5+W8A=
 github.com/streamingfast/opaque v0.0.0-20210811180740-0c01d37ea308 h1:xlWSfi1BoPfsHtPb0VEHGUcAdBF208LUiFCwfaVPfLA=
 github.com/streamingfast/opaque v0.0.0-20210811180740-0c01d37ea308/go.mod h1:K1p8Bj/wG34KJvYzPUqtzpndffmpkrVY11u2hkyxCWQ=
 github.com/streamingfast/overseer v0.2.1-0.20210326144022-ee491780e3ef h1:9IVFHRsqvI+vKJwgF1OMV6L55jHbaV/ZLoU4IAG/dME=

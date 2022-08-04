@@ -1,19 +1,18 @@
 package nodemanager
 
 import (
-	"encoding/base64"
 	"fmt"
+	"os"
 	"strings"
 	"sync"
 
 	"github.com/ShinyTrinkets/overseer"
-	pbaptos "github.com/streamingfast/firehose-aptos/types/pb/sf/aptos/type/v1"
+	nodeManager "github.com/streamingfast/node-manager"
 	logplugin "github.com/streamingfast/node-manager/log_plugin"
 	"github.com/streamingfast/node-manager/metrics"
 	"github.com/streamingfast/node-manager/superviser"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"google.golang.org/protobuf/proto"
 )
 
 type Superviser struct {
@@ -25,7 +24,6 @@ type Superviser struct {
 	dataDir       string
 	lastBlockSeen uint64
 	serverId      string
-	Logger        *zap.Logger
 }
 
 func (s *Superviser) GetName() string {
@@ -38,6 +36,7 @@ func NewSuperviser(
 	dataDir string,
 	debugDeepMind bool,
 	logToZap bool,
+	lastSeenBlockNum uint64,
 	appLogger *zap.Logger,
 	nodelogger *zap.Logger,
 ) *Superviser {
@@ -45,14 +44,12 @@ func NewSuperviser(
 	overseer.DEFAULT_LINE_BUFFER_SIZE = 50 * 1024 * 1024
 
 	supervisor := &Superviser{
-		Superviser: superviser.New(appLogger, binary, arguments),
-		Logger:     appLogger,
-		binary:     binary,
-		arguments:  arguments,
-		dataDir:    dataDir,
+		Superviser:    superviser.New(appLogger, binary, arguments),
+		binary:        binary,
+		arguments:     arguments,
+		dataDir:       dataDir,
+		lastBlockSeen: lastSeenBlockNum,
 	}
-
-	supervisor.RegisterLogPlugin(logplugin.LogPluginFunc(supervisor.lastBlockSeenLogPlugin))
 
 	if logToZap {
 		supervisor.RegisterLogPlugin(newToZapLogPlugin(debugDeepMind, nodelogger))
@@ -66,6 +63,16 @@ func NewSuperviser(
 
 func (s *Superviser) GetCommand() string {
 	return s.binary + " " + strings.Join(s.arguments, " ")
+}
+
+func (s *Superviser) Start(options ...nodeManager.StartOption) error {
+	s.Logger.Info("re-configuring environment variable to start syncing at correct location", zap.Uint64("starting_version", s.lastBlockSeen))
+	// We inherit from parent process env (via `os.Environ()`) and add
+	// STARTING_VERSION which will be picked by `apots-node` to determine
+	// at which "version" to start.
+	s.Env = append(os.Environ(), fmt.Sprintf("STARTING_VERSION=%d", s.lastBlockSeen))
+
+	return s.Superviser.Start(options...)
 }
 
 func (s *Superviser) IsRunning() bool {
@@ -98,30 +105,9 @@ func (s *Superviser) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	return nil
 }
 
-func (s *Superviser) lastBlockSeenLogPlugin(line string) {
-	if !strings.HasPrefix(line, "DMLOG TRX") {
-		fmt.Println("Received line missed the line!!!!", line)
-		return
-	}
-
-	// FIXME: That's is really inefficient, we should ask Aptos team to change the format of the
-	// message to right away include the version in the line so we don't need to fully decode the
-	// content here.
-	dataBase64 := line[9:]
-	data, err := base64.StdEncoding.DecodeString(dataBase64)
-	if err != nil {
-		s.Logger.Warn("unable to decode DMLOG TRX content", zap.Error(err))
-		return
-	}
-
-	transactionTrimmed := &pbaptos.TransactionTrimmed{}
-	if err := proto.Unmarshal(data, transactionTrimmed); err != nil {
-		s.Logger.Warn("unable to unmarshal DMLOG TRX content", zap.Error(err))
-		return
-	}
-
-	// FIXME: Right now we have the real version because our "Block" are actual Aptos transaction
-	// but if we change so that a `Block` becomes a set of transactions, then we need to change
-	// here.
-	s.lastBlockSeen = transactionTrimmed.Version
+// FIXME: Right now we have the real version because our "Block" are actual Aptos transaction
+// but if we change so that a `Block` becomes a set of transactions, then we need to change
+// here.
+func (s *Superviser) SetLastBlockSeen(blockNum uint64) {
+	s.lastBlockSeen = blockNum
 }

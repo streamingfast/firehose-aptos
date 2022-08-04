@@ -2,7 +2,9 @@ package cli
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -134,12 +136,25 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 		}
 		metricsAndReadinessManager := buildMetricsAndReadinessManager(flagPrefix, readinessMaxLatency)
 
+		extractorWorkindDir := mustReplaceDataDir(sfDataDir, viper.GetString("extractor-node-working-dir"))
+		syncStateFile := filepath.Join(extractorWorkindDir, "sync_state.json")
+		syncState, err := readNodeSyncState(syncStateFile)
+		if err != nil {
+			if !errors.Is(err, fs.ErrNotExist) {
+				return nil, fmt.Errorf("read node sync state: %w", err)
+			}
+
+			syncState = &extractorNodeSyncState{Version: 0}
+		}
+		appLogger.Info("inital sync state used to restart node", zap.Reflect("state", syncState))
+
 		superviser := nodemanager.NewSuperviser(
 			nodePath,
 			nodeArguments,
 			nodeDataDir,
 			debugDeepMind,
 			logToZap,
+			syncState.Version,
 			appLogger,
 			supervisedProcessLogger,
 		)
@@ -179,7 +194,6 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 
 		blockStreamServer := blockstream.NewUnmanagedServer(blockstream.ServerOptionWithLogger(appLogger))
 		oneBlocksStoreURL := mustReplaceDataDir(sfDataDir, viper.GetString("common-one-blocks-store-url"))
-		workingDir := mustReplaceDataDir(sfDataDir, viper.GetString("extractor-node-working-dir"))
 		gprcListenAdrr := viper.GetString("extractor-node-grpc-listen-addr")
 		batchStartBlockNum := viper.GetUint64("extractor-node-start-block-num")
 		batchStopBlockNum := viper.GetUint64("extractor-node-stop-block-num")
@@ -189,12 +203,15 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 		mindreaderPlugin, err := getMindreaderLogPlugin(
 			blockStreamServer,
 			oneBlocksStoreURL,
-			workingDir,
+			extractorWorkindDir,
 			batchStartBlockNum,
 			batchStopBlockNum,
 			blocksChanCapacity,
 			oneBlockFileSuffix,
 			chainOperator.Shutdown,
+			func(lastBlockSeen uint64) {
+				superviser.SetLastBlockSeen(lastBlockSeen)
+			},
 			metricsAndReadinessManager,
 			appLogger,
 			appTracer,
@@ -324,7 +341,6 @@ func buildNodeArguments(logger *zap.Logger, nodeDataDir, nodeConfigFile, nodeRol
 	}
 
 	argsString = strings.Replace(argsString, "{node-data-dir}", nodeDataDir, -1)
-	fmt.Println(argsString)
 	argsSlice := strings.Fields(argsString)
 	return argsSlice, nil
 }
