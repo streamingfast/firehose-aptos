@@ -7,8 +7,7 @@ RUN apt-get update && apt-get install -y cmake curl clang git pkg-config libssl-
 RUN --mount=type=cache,target=/var/cache/apk \
     --mount=type=cache,target=/home/rust/.cargo \
     rustup component add rustfmt \
-    # Use branch add_sf_stream_thread until it's merged upstream and in which case it will not be required anymore
-    && git clone https://github.com/aptos-labs/aptos-core.git -b add_sf_stream_thread \
+    && git clone https://github.com/aptos-labs/aptos-core.git \
     && cd aptos-core \
     && RUSTFLAGS="--cfg tokio_unstable" cargo build --release -p aptos-node \
     && cp target/release/aptos-node /home/rust/
