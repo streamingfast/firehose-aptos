@@ -19,11 +19,14 @@ RUN mkdir /tmp/wasmer-install && cd /tmp/wasmer-install && \
     mv lib/libwasmer.a lib/libwasmer.so /usr/lib/ && cd / && rm -rf /tmp/wasmer-install
 
 ADD /fireaptos /app/fireaptos
-COPY --from=chain /usr/local/bin/aptos-node /app/aptos-node
 
 COPY tools/fireaptos/motd_generic /etc/
 COPY tools/fireaptos/motd_node_manager /etc/
 COPY tools/fireaptos/99-firehose.sh /etc/profile.d/
 COPY tools/fireaptos/scripts/* /usr/local/bin
+
+# Happen as low as possible because we will be waiting for image to download, so it let
+# operations above in in the same stage to continue
+COPY --from=chain /usr/local/bin/aptos-node /app/aptos-node
 
 ENTRYPOINT ["/app/fireaptos"]
