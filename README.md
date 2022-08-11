@@ -45,7 +45,7 @@
 1. Generate go file from modified protobuf
 
    ```
-   ./types/pb/generate.sh`
+   ./types/pb/generate.sh
    ```
 
 1. Run tests and fix any problems:
