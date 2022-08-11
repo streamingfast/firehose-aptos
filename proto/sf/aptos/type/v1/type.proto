@@ -10,6 +10,7 @@ option go_package = "github.com/streamingfast/firehose-aptos/types/pb/sf/aptos/t
 message Block {
   google.protobuf.Timestamp timestamp = 1;
   uint64 block_height = 2;
+  repeated Transaction transactions = 3;
 }
 
 message Transaction {
