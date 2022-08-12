@@ -1,3 +1,3 @@
-generate.sh - Tue Aug  9 10:16:21 PDT 2022 - bowen
+generate.sh - Thu Aug 11 13:40:43 PDT 2022 - bowen
 streamingfast/proto revision: 
-streamingfast/firehose-aptos/proto revision: 288740c
+streamingfast/firehose-aptos/proto revision: ba3b751
