@@ -3,6 +3,8 @@
 
 syntax = "proto3";
 
+package aptos.extractor.v1;
+
 import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/streamingfast/firehose-aptos/types/pb/sf/aptos/type/v1;pbaptos";

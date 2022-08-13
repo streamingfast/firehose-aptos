@@ -8,29 +8,27 @@ import (
 	"github.com/streamingfast/bstream"
 )
 
-func (b *Transaction) ID() string {
-	id := make([]byte, 8)
-	binary.BigEndian.PutUint64(id, b.Version)
-
-	return hex.EncodeToString(id)
+func (b *Block) ID() string {
+	return uint64ToID(b.Height)
 }
 
-func (b *Transaction) Number() uint64 {
-	return b.Version
+func (b *Block) Number() uint64 {
+	return b.Height
 }
 
-func (b *Transaction) PreviousID() string {
-	if b.Version <= bstream.GetProtocolFirstStreamableBlock {
-		return ""
+func (b *Block) PreviousID() string {
+	return uint64ToID(b.PreviousNum())
+}
+
+func (b *Block) PreviousNum() uint64 {
+	if b.Height <= bstream.GetProtocolFirstStreamableBlock {
+		return bstream.GetProtocolFirstStreamableBlock
 	}
 
-	previousID := make([]byte, 8)
-	binary.BigEndian.PutUint64(previousID, b.Version-1)
-
-	return hex.EncodeToString(previousID)
+	return b.Height - 1
 }
 
-func (b *Transaction) LIBNum() uint64 {
+func (b *Block) LIBNum() uint64 {
 	number := b.Number()
 	if number <= bstream.GetProtocolFirstStreamableBlock {
 		return number
@@ -42,6 +40,29 @@ func (b *Transaction) LIBNum() uint64 {
 	return b.Number() - 1
 }
 
-func (b *Transaction) Time() time.Time {
+func (b *Block) Time() time.Time {
 	return b.Timestamp.AsTime()
+}
+
+func (t *Transaction) ID() string {
+	return uint64ToID(t.Version)
+}
+
+func (t *Transaction) Time() time.Time {
+	return t.Timestamp.AsTime()
+}
+
+func (t *Transaction) IsBlockStartBoundaryType() bool {
+	return t.Type == Transaction_BLOCK_METADATA || t.Type == Transaction_GENESIS
+}
+
+func uint64ToHash(height uint64) []byte {
+	id := make([]byte, 8)
+	binary.BigEndian.PutUint64(id, height)
+
+	return id
+}
+
+func uint64ToID(height uint64) string {
+	return hex.EncodeToString(uint64ToHash(height))
 }

@@ -7,11 +7,13 @@ This documents outlines what is the actual format for messages exchanges between
 Here a quick example of the output format, you will find below extra details
 
 ```
-DMLOG INIT aptos-node 0.1.0 aptos 0 0
-DMLOG TRX <sf.aptos.types.v1.TransactionTrace>
-DMLOG TRX <sf.aptos.types.v1.TransactionTrace>
-DMLOG TRX <sf.aptos.types.v1.TransactionTrace>
+FIRE INIT aptos-node 0.1.0 aptos 0 0
+FIRE BLOCK_START <height>
+FIRE TRX <sf.aptos.types.v1.TransactionTrace>
+FIRE TRX <sf.aptos.types.v1.TransactionTrace>
+FIRE TRX <sf.aptos.types.v1.TransactionTrace>
 ...
+FIRE BLOCK_END <height>
 ```
 
 The `<sf.aptos.types.v1.TransactionTrace>` and any other Protobuf structure are encoded with base64 standard with padding.
@@ -20,21 +22,21 @@ The `<sf.aptos.types.v1.TransactionTrace>` and any other Protobuf structure are 
 
 Each message are form in a single line of UTF-8 text characters, each line must be terminated by a single line ending terminal symbol specific to the platform we currently runs on, e.g. `\n` on Unix and OS X, `\r\n` on Windows.
 
-Each line must be prefixed by `DMLOG ` to add some validation to all messages received.
+Each line must be prefixed by `FIRE ` to add some validation to all messages received.
 
-Each message **not** prefixed by `DMLOG ` received must be ignored by the reader.
+Each message **not** prefixed by `FIRE ` received must be ignored by the reader.
 
 Each "parameter" element in the line must separated by a space character.
 
-Each "parameter" element in the line must written in string form **without** double-quotes, so a pure string like `bob` is written the same way as the number `10` respectively `DMLOG TRX bob` and `DMLOG TRX 10`.
+Each "parameter" element in the line must written in string form **without** double-quotes, so a pure string like `bob` is written the same way as the number `10` respectively `FIRE TRX bob` and `FIRE TRX 10`.
 
 #### `INIT`
 
 ```
-DMLOG INIT <client_name> <client_version> <fork_name> <firehose_major> <firehose_minor>
+FIRE INIT <client_name> <client_version> <fork_name> <firehose_major> <firehose_minor>
 ```
 
-The first message that should be sent is the `DMLOG INIT` message that is used to ensure the reader is able to handle the format the instrumented process is about to send to use. The `INIT` messages is also used to exchange some basic information like the client's name, client's version, fork name and Firehose major and minor version.
+The first message that should be sent is the `FIRE INIT` message that is used to ensure the reader is able to handle the format the instrumented process is about to send to use. The `INIT` messages is also used to exchange some basic information like the client's name, client's version, fork name and Firehose major and minor version.
 
 And here the description of each parameters:
 
@@ -48,12 +50,14 @@ And here the description of each parameters:
 
 ##### Considerations
 
-Every messages that fits the `DMLOG` format received before the `DMLOG INIT` message must be ignored.
+Every messages that fits the `FIRE` format received before the `FIRE INIT` message must be ignored.
+
+
 
 #### `TRX`
 
 ```
-DMLOG TRX <sf.aptos.types.v1.Transaction>
+FIRE TRX <sf.aptos.types.v1.Transaction>
 ```
 
 Issue after the intial `INIT` message for each and single transaction of any types happening on the network. The single and only parameter should be the fully constructed Protobuf object of type [sf.aptos.types.v1.Transaction](../proto/sf/aptos/type/v1/type.proto#L11), bytes encoded and serialized to base64 standard with padding.
@@ -61,7 +65,7 @@ Issue after the intial `INIT` message for each and single transaction of any typ
 Final line would look like:
 
 ```
-DMLOG TRX 1QChXYTVkjypOUcHZjvk_wbLo6Rx8hs-cdsOeRfSep5QEDL53miXiA4qVeIdneG69gpmVyO5B6pn5O4VRuMQljPw
+FIRE TRX 1QChXYTVkjypOUcHZjvk_wbLo6Rx8hs-cdsOeRfSep5QEDL53miXiA4qVeIdneG69gpmVyO5B6pn5O4VRuMQljPw
 ```
 
 Where doing a base64 decoding of `1QChXYTVkjypOUcHZjvk_wbLo6Rx8hs-cdsOeRfSep5QEDL53miXiA4qVeIdneG69gpmVyO5B6pn5O4VRuMQljPw` would yield a series of bytes that could be decoded to `sf.aptos.types.v1.Transaction` Protobuf structure.
