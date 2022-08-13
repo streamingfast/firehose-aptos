@@ -4,9 +4,9 @@ import (
 	"time"
 
 	"github.com/mitchellh/go-testing-interface"
-	pbaptos "github.com/streamingfast/firehose-aptos/types/pb/sf/aptos/type/v1"
+	pbaptos "github.com/streamingfast/firehose-aptos/types/pb/aptos/extractor/v1"
+	pbtimestamp "github.com/streamingfast/firehose-aptos/types/pb/aptos/util/timestamp"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func Transaction(t testing.T, version uint64, components ...interface{}) *pbaptos.Transaction {
@@ -20,7 +20,7 @@ func Transaction(t testing.T, version uint64, components ...interface{}) *pbapto
 			trx.Type = v
 
 		case timestamp:
-			trx.Timestamp = timestamppb.New(time.Time(v))
+			trx.Timestamp = pbtimestamp.New(time.Time(v))
 
 		default:
 			failInvalidComponent(t, "transaction", component)

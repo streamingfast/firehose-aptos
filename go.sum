@@ -577,6 +577,8 @@ github.com/streamingfast/logging v0.0.0-20220304183711-ddba33d79e27/go.mod h1:4G
 github.com/streamingfast/logging v0.0.0-20220304214715-bc750a74b424/go.mod h1:VlduQ80JcGJSargkRU4Sg9Xo63wZD/l8A5NC/Uo1/uU=
 github.com/streamingfast/logging v0.0.0-20220511154537-ce373d264338 h1:Mn7i0pN8FASFpCDvtnRhV7L1bdlj1MteLkRWsxFVIhE=
 github.com/streamingfast/logging v0.0.0-20220511154537-ce373d264338/go.mod h1:VlduQ80JcGJSargkRU4Sg9Xo63wZD/l8A5NC/Uo1/uU=
+github.com/streamingfast/logging v0.0.0-20220813175024-b4fbb0e893df h1:P4pTLzwgd6bO3nnlIPnfQ/9Swnx3kSWxItgfkyDFoWo=
+github.com/streamingfast/logging v0.0.0-20220813175024-b4fbb0e893df/go.mod h1:VlduQ80JcGJSargkRU4Sg9Xo63wZD/l8A5NC/Uo1/uU=
 github.com/streamingfast/merger v0.0.3-0.20220803202246-1277c51d3487 h1:dzUg2NGo8qopXrHgHlrFChiotSHM2Q5QTl9XrxrbbRk=
 github.com/streamingfast/merger v0.0.3-0.20220803202246-1277c51d3487/go.mod h1:poAOzquaxaFT7v0O0G6V0F2uffdUsgE8UUkXrO55EiQ=
 github.com/streamingfast/node-manager v0.0.2-0.20220804015313-01ef0ea2678c h1:+/CHGxHvZGGjldmd5OTAW9zZUtcoSqHxW1hyxxDSckw=

@@ -3,7 +3,7 @@ base:
   data_dir: {data-dir}
   role: validator
   waypoint:
-    from_config: "0:42a5707b4952ce40c6c6316a7019f45a6f5671d9960ed38e6024eae9aae1cca0"
+    from_config: "0:8ed8af7da1411aa55ba5f60de1a470754ce16c46ee3c3a216492e73f7495a4a9"
 consensus:
   max_block_size: 6000
   max_pruned_blocks_in_mem: 100
@@ -30,7 +30,7 @@ consensus:
       from_file:
         identity_blob_path: {validator-identity-file}
         waypoint:
-          from_config: "0:42a5707b4952ce40c6c6316a7019f45a6f5671d9960ed38e6024eae9aae1cca0"
+          from_config: "0:8ed8af7da1411aa55ba5f60de1a470754ce16c46ee3c3a216492e73f7495a4a9"
   sync_only: false
   channel_size: 30
   use_quorum_store: false

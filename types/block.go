@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/streamingfast/bstream"
-	pbaptos "github.com/streamingfast/firehose-aptos/types/pb/sf/aptos/type/v1"
+	pbaptos "github.com/streamingfast/firehose-aptos/types/pb/aptos/extractor/v1"
 	pbbstream "github.com/streamingfast/pbgo/sf/bstream/v1"
 	"google.golang.org/protobuf/proto"
 )
