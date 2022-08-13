@@ -14,12 +14,12 @@ require (
 	github.com/streamingfast/dgrpc v0.0.0-20220307180102-b2d417ac8da7
 	github.com/streamingfast/dlauncher v0.0.0-20220307153121-5674e1b64d40
 	github.com/streamingfast/dmetering v0.0.0-20220307162406-37261b4b3de9
-	github.com/streamingfast/dmetrics v0.0.0-20220806045225-e942ac0de928
+	github.com/streamingfast/dmetrics v0.0.0-20220811180000-3e513057d17c
 	github.com/streamingfast/dstore v0.1.1-0.20220607202639-35118aeaf648
 	github.com/streamingfast/firehose v0.1.1-0.20220804182444-4a9610410835
 	github.com/streamingfast/logging v0.0.0-20220511154537-ce373d264338
 	github.com/streamingfast/merger v0.0.3-0.20220803202246-1277c51d3487
-	github.com/streamingfast/node-manager v0.0.2-0.20220804015313-01ef0ea2678c
+	github.com/streamingfast/node-manager v0.0.2-0.20220813134942-5b1ca12326f6
 	github.com/streamingfast/pbgo v0.0.6-0.20220630154121-2e8bba36234e
 	github.com/streamingfast/relayer v0.0.2-0.20220802193804-8c63614023a9
 	github.com/streamingfast/sf-tools v0.0.0-20220727183125-3348eaca0e25

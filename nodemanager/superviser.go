@@ -9,7 +9,6 @@ import (
 	"github.com/ShinyTrinkets/overseer"
 	nodeManager "github.com/streamingfast/node-manager"
 	logplugin "github.com/streamingfast/node-manager/log_plugin"
-	"github.com/streamingfast/node-manager/metrics"
 	"github.com/streamingfast/node-manager/superviser"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -73,18 +72,6 @@ func (s *Superviser) Start(options ...nodeManager.StartOption) error {
 	s.Env = append(os.Environ(), fmt.Sprintf("STARTING_VERSION=%d", s.lastBlockSeen))
 
 	return s.Superviser.Start(options...)
-}
-
-func (s *Superviser) IsRunning() bool {
-	isRunning := s.Superviser.IsRunning()
-	isRunningMetricsValue := float64(0)
-	if isRunning {
-		isRunningMetricsValue = float64(1)
-	}
-
-	metrics.NodeosCurrentStatus.SetFloat64(isRunningMetricsValue)
-
-	return isRunning
 }
 
 func (s *Superviser) LastSeenBlockNum() uint64 {

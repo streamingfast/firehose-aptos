@@ -3,13 +3,13 @@ base:
   data_dir: {data-dir}
   role: validator
   waypoint:
-    from_config: "0:a139e1355706b3e14c5fbb8579a078dab83d6688c01a700751f53d48e3407ae7"
+    from_config: "0:42a5707b4952ce40c6c6316a7019f45a6f5671d9960ed38e6024eae9aae1cca0"
 consensus:
   max_block_size: 6000
   max_pruned_blocks_in_mem: 100
   mempool_executed_txn_timeout_ms: 1000
   mempool_txn_pull_timeout_ms: 1000
-  round_initial_timeout_ms: 1000
+  round_initial_timeout_ms: 1500
   safety_rules:
     backend:
       type: on_disk_storage
@@ -20,6 +20,7 @@ consensus:
       enable_backtrace: false
       is_async: true
       level: INFO
+      console_port: 6669
     service:
       type: thread
     test: ~
@@ -29,7 +30,7 @@ consensus:
       from_file:
         identity_blob_path: {validator-identity-file}
         waypoint:
-          from_config: "0:a139e1355706b3e14c5fbb8579a078dab83d6688c01a700751f53d48e3407ae7"
+          from_config: "0:42a5707b4952ce40c6c6316a7019f45a6f5671d9960ed38e6024eae9aae1cca0"
   sync_only: false
   channel_size: 30
   use_quorum_store: false
@@ -77,7 +78,7 @@ full_node_networks:
     identity:
       type: from_file
       path: {vfn-identity-file}
-    listen_address: /ip4/0.0.0.0/tcp/54704
+    listen_address: /ip4/0.0.0.0/tcp/50619
     mutual_authentication: false
     network_id:
       private: vfn
@@ -102,7 +103,8 @@ logger:
   chan_size: 10000
   enable_backtrace: false
   is_async: true
-  level: INFO
+  level: DEBUG
+  console_port: 6669
 mempool:
   capacity: 1000000
   capacity_per_user: 100
@@ -112,7 +114,7 @@ mempool:
   shared_mempool_ack_timeout_ms: 2000
   shared_mempool_backoff_interval_ms: 30000
   shared_mempool_batch_size: 100
-  shared_mempool_max_concurrent_inbound_syncs: 2
+  shared_mempool_max_concurrent_inbound_syncs: 4
   shared_mempool_tick_interval_ms: 50
   system_transaction_timeout_secs: 600
   system_transaction_gc_interval_ms: 60000
@@ -124,19 +126,11 @@ peer_monitoring_service:
 api:
   enabled: true
   address: "0.0.0.0:8080"
+  failpoints_enabled: false
 state_sync:
-  chunk_limit: 1000
-  client_commit_timeout_ms: 5000
-  long_poll_timeout_ms: 10000
-  max_chunk_limit: 1000
-  max_timeout_ms: 120000
-  mempool_commit_timeout_ms: 5000
-  multicast_timeout_ms: 30000
-  sync_request_timeout_ms: 60000
-  tick_interval_ms: 100
   data_streaming_service:
     global_summary_refresh_interval_ms: 50
-    max_concurrent_requests: 1
+    max_concurrent_requests: 2
     max_data_stream_channel_sizes: 1000
     max_request_retry: 3
     max_notification_id_mappings: 2000
@@ -146,15 +140,17 @@ state_sync:
     max_num_in_flight_regular_polls: 10
     response_timeout_ms: 5000
     summary_poll_interval_ms: 200
+    use_compression: true
   state_sync_driver:
     bootstrapping_mode: ApplyTransactionOutputsFromGenesis
-    enable_state_sync_v2: true
+    commit_notification_timeout_ms: 5000
     continuous_syncing_mode: ApplyTransactionOutputs
     progress_check_interval_ms: 100
     max_connection_deadline_secs: 10
     max_consecutive_stream_notifications: 10
     max_pending_data_chunks: 100
     max_stream_wait_time_ms: 5000
+    num_versions_to_skip_snapshot_sync: 10000000
   storage_service:
     max_concurrent_requests: 4000
     max_epoch_chunk_size: 100
@@ -171,13 +167,15 @@ storage:
   address: "127.0.0.1:6666"
   backup_service_address: "127.0.0.1:6186"
   dir: db
-  grpc_max_receive_len: 100000000
   storage_pruner_config:
+    enable_state_store_pruner: true
+    enable_ledger_pruner: true
     state_store_prune_window: 1000000
     ledger_prune_window: 10000000
     ledger_pruning_batch_size: 500
     state_store_pruning_batch_size: 1000
-  timeout_ms: 30000
+    user_pruning_window_offset: 200000
+  target_snapshot_size: 100000
   rocksdb_configs:
     ledger_db_config:
       max_open_files: 5000
@@ -187,6 +185,11 @@ storage:
       max_open_files: 5000
       max_total_wal_size: 1073741824
       max_background_jobs: 16
+    index_db_config:
+      max_open_files: 1000
+      max_total_wal_size: 1073741824
+      max_background_jobs: 16
+  enable_indexer: false
 test: ~
 validator_network:
   max_connection_delay_ms: 60000
@@ -210,7 +213,7 @@ validator_network:
   ping_interval_ms: 10000
   ping_timeout_ms: 20000
   ping_failures_tolerated: 5
-  max_outbound_connections: 2
+  max_outbound_connections: 4
   max_inbound_connections: 100
   inbound_rate_limit_config: ~
   outbound_rate_limit_config: ~

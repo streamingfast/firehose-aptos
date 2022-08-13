@@ -11,28 +11,21 @@ import (
 // This file configures a logging extractor that transforms log lines received from the blockchain process running
 // and then logs them inside the Firehose stack logging system.
 //
-// A simple regex is going to identify the level of the line and turn it into our internal level value.
-//
-// You **must** adapt this line to fit with the log lines of your chain. For example, the dummy blockchain we
-// instrumented in `firehose-aptos`, log lines look like:
-//
-//    time="2022-03-04T12:49:34-05:00" level=info msg="initializing node"
-//
 // So our regex look like the one below, extracting the `info` value from a group in the regexp.
-var logLevelRegex = regexp.MustCompile("level=(debug|info|warn|warning|error)")
+var logLineRegex = regexp.MustCompile("^[0123][0-9]{3}-[0-9]{1,2}-[0-9]{1,2}T[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}\\.[0-9]+Z\\s*(\\[.*\\])?\\s*(ERROR|WARN|DEBUG|INFO)\\s*(.*)")
 
 func newToZapLogPlugin(debugDeepMind bool, logger *zap.Logger) *logplugin.ToZapLogPlugin {
-	return logplugin.NewToZapLogPlugin(debugDeepMind, logger, logplugin.ToZapLogPluginLogLevel(logLevelExtractor), logplugin.ToZapLogPluginTransformer(stripTimeTransformer))
+	return logplugin.NewToZapLogPlugin(debugDeepMind, logger, logplugin.ToZapLogPluginLogLevel(logLevelExtractor), logplugin.ToZapLogPluginTransformer(stripPrefix))
 }
 
 func logLevelExtractor(in string) zapcore.Level {
 	// If the regex does not match the line, log to `INFO` so at least we see something by default.
-	groups := logLevelRegex.FindStringSubmatch(in)
-	if len(groups) <= 1 {
+	groups := logLineRegex.FindStringSubmatch(in)
+	if len(groups) <= 3 {
 		return zap.InfoLevel
 	}
 
-	switch groups[1] {
+	switch groups[2] {
 	case "debug", "DEBUG":
 		return zap.DebugLevel
 	case "info", "INFO":
@@ -42,12 +35,19 @@ func logLevelExtractor(in string) zapcore.Level {
 	case "error", "ERROR":
 		return zap.ErrorLevel
 	default:
-		return zap.InfoLevel
+		return zap.DebugLevel
 	}
 }
 
-var timeRegex = regexp.MustCompile(`time="[0-9]{4}-[^"]+"\s*`)
+func stripPrefix(in string) string {
+	groups := logLineRegex.FindStringSubmatch(in)
+	if len(groups) <= 3 {
+		return in
+	}
 
-func stripTimeTransformer(in string) string {
-	return timeRegex.ReplaceAllString(in, "")
+	if groups[1] == "" {
+		return groups[3]
+	}
+
+	return groups[1] + " " + groups[3]
 }

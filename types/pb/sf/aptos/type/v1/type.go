@@ -17,12 +17,16 @@ func (b *Block) Number() uint64 {
 }
 
 func (b *Block) PreviousID() string {
+	if b.Height == 0 {
+		return ""
+	}
+
 	return uint64ToID(b.PreviousNum())
 }
 
 func (b *Block) PreviousNum() uint64 {
-	if b.Height <= bstream.GetProtocolFirstStreamableBlock {
-		return bstream.GetProtocolFirstStreamableBlock
+	if b.Height == 0 {
+		return 0
 	}
 
 	return b.Height - 1
