@@ -66,6 +66,8 @@
     grpcurl -plaintext -import-path ../proto -import-path ./proto -proto sf/aptos/type/v1/type.proto -proto sf/firehose/v2/firehose.proto -d '{"start_block_num": 0}' localhost:18015 sf.firehose.v2.Stream.Blocks
     ```
 
+1. (optional) Make .spkg file for substreams
+    ```substreams pack substreams/substreams.yaml```
 ## Release
 
 Use the `./bin/release.sh` Bash script to perform a new release. It will ask you questions

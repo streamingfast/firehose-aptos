@@ -225,7 +225,7 @@ func (r *ConsoleReader) readBlockStart(params []string) error {
 }
 
 // Format:
-// FIRE TRX <sf.aptos.type.v1.Transaction>
+// FIRE TRX <sf.aptos.type.v1.Block>
 func (r *ConsoleReader) readTransaction(params []string) error {
 	if err := validateChunk(params, 1); err != nil {
 		return fmt.Errorf("invalid log line length: %w", err)

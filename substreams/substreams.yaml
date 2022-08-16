@@ -10,6 +10,7 @@ package:
 
 protobuf:
   files:
-    - sf/aptos/type/v1/type.proto
+    - aptos/extractor/v1/extractor.proto
+    - aptos/util/timestamp/timestamp.proto
   importPaths:
     - ../proto
