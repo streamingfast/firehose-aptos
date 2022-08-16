@@ -97,7 +97,7 @@ func init() {
 
 				sss := substreamsService.New(
 					stateStore,
-					"sf.aptos.type.v1.Block",
+					"aptos.extractor.v1.Block",
 					ssClientFactory,
 					viper.GetInt("substreams-sub-request-parallel-jobs"),
 					viper.GetInt("substreams-sub-request-block-range-size"),

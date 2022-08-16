@@ -225,7 +225,7 @@ func (r *ConsoleReader) readBlockStart(params []string) error {
 }
 
 // Format:
-// FIRE TRX <sf.aptos.type.v1.Block>
+// FIRE TRX <sf.aptos.type.v1.Transaction>
 func (r *ConsoleReader) readTransaction(params []string) error {
 	if err := validateChunk(params, 1); err != nil {
 		return fmt.Errorf("invalid log line length: %w", err)
@@ -292,7 +292,7 @@ func (r *ConsoleReader) readBlockEnd(params []string) (*pbaptos.Block, error) {
 
 	r.stats.blockRate.Inc()
 	r.stats.transactionRate.IncBy(int64(len(r.activeBlock.Transactions)))
-	r.stats.blockAverageParseTime.IncByElapsedTime(r.activeBlockStartTime)
+	r.stats.blockAverageParseTime.IncByElapsedTime(r.activeBlockStartTime, time.Millisecond)
 
 	r.logger.Debug("console reader read block",
 		zap.String("id", r.activeBlock.ID()),
