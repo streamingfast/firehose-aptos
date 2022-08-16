@@ -8,6 +8,10 @@ import (
 	"github.com/streamingfast/bstream"
 )
 
+func (b *Block) AsRef() bstream.BlockRef {
+	return bstream.NewBlockRef(b.ID(), b.Height)
+}
+
 func (b *Block) ID() string {
 	return uint64ToID(b.Height)
 }

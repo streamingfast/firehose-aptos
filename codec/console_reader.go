@@ -293,6 +293,7 @@ func (r *ConsoleReader) readBlockEnd(params []string) (*pbaptos.Block, error) {
 	r.stats.blockRate.Inc()
 	r.stats.transactionRate.IncBy(int64(len(r.activeBlock.Transactions)))
 	r.stats.blockAverageParseTime.IncByElapsedTime(r.activeBlockStartTime, time.Millisecond)
+	r.stats.lastBlock = r.activeBlock.AsRef()
 
 	r.logger.Debug("console reader read block",
 		zap.String("id", r.activeBlock.ID()),
