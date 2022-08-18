@@ -15,9 +15,18 @@
 
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd ../.. && pwd )"
 
+APTOS_ROOT=${APTOS_ROOT:-""}
+if [[ ! -d "$APTOS_ROOT" ]]; then
+  echo "To generate 'firehose-aptos' types correctly, you need to define environment"
+  echo "variable 'APTOS_ROOT' and making it point to aptos core root directory. It's right"
+  echo "now either undefined or pointing to a non-existent location."
+  exit 1
+fi
+
 # Protobuf definitions
 PROTO=${1:-"$ROOT/../proto"}
-PROTO_APTOS=${2:-"$ROOT/proto"}
+#PROTO_APTOS=${2:-"$ROOT/proto"}
+PROTO_APTOS_CHAIN=${2:-"$APTOS_ROOT/crates/aptos-protos/proto"}
 
 function main() {
   checks
@@ -43,7 +52,7 @@ function generate() {
     fi
 
     for file in "$@"; do
-      protoc -I$PROTO -I$PROTO_APTOS \
+      protoc "-I$PROTO" "-I$PROTO_APTOS_CHAIN" \
         --go_out=. --go_opt=paths=source_relative \
         --go-grpc_out=. --go-grpc_opt=paths=source_relative,require_unimplemented_servers=false \
          $base$file

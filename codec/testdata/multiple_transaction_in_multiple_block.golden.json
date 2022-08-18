@@ -27,7 +27,8 @@
       "type": 2,
       "TxnData": null
     }
-  ]
+  ],
+  "chain_id": 4
 },{
   "timestamp": {
     "seconds": 1577977445
@@ -57,6 +58,7 @@
       "type": 2,
       "TxnData": null
     }
-  ]
+  ],
+  "chain_id": 4
 }
 ]

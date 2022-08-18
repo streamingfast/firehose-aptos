@@ -234,7 +234,10 @@ func (r *ConsoleReader) readBlockStart(params []string) error {
 	}
 
 	r.activeBlockStartTime = time.Now()
-	r.activeBlock = &pbaptos.Block{Height: height}
+	r.activeBlock = &pbaptos.Block{
+		Height:  height,
+		ChainId: r.chainID,
+	}
 
 	return nil
 }
