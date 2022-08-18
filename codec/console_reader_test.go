@@ -41,6 +41,14 @@ func TestParseFromFile(t *testing.T) {
 		assertError require.ErrorAssertionFunc
 	}{
 		{
+			"malformed init",
+			[]string{
+				fireInitInvalid("wrong"),
+			},
+			EqualErrorAssertion(`invalid log line length: 5 fields required but found 1 (on line "FIRE INIT wrong")`),
+		},
+
+		{
 			"genesis",
 			[]string{
 				fireInit("aptos-node", "0.0.0", "aptos", "0", "0"),
@@ -336,6 +344,10 @@ func generateSyntheticFirelogFile(filename string, lines ...string) error {
 
 func fireInit(clientName, clientVersion, fork, firehoseMajor, firehoseMinor string) string {
 	return fmt.Sprintf("FIRE INIT %s %s %s %s %s", clientName, clientVersion, fork, firehoseMajor, firehoseMinor)
+}
+
+func fireInitInvalid(data string) string {
+	return fmt.Sprintf("FIRE INIT %s", data)
 }
 
 func fireBlockStart(height uint64) string {

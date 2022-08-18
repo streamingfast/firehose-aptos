@@ -13,6 +13,7 @@ import (
 //
 // So our regex look like the one below, extracting the `info` value from a group in the regexp.
 var logLineRegex = regexp.MustCompile("^[0123][0-9]{3}-[0-9]{1,2}-[0-9]{1,2}T[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}\\.[0-9]+Z\\s*(\\[.*\\])?\\s*(ERROR|WARN|DEBUG|INFO)\\s*(.*)")
+var panicLineRegex = regexp.MustCompile("^thread '.*' panicked")
 
 func newToZapLogPlugin(debugDeepMind bool, logger *zap.Logger) *logplugin.ToZapLogPlugin {
 	return logplugin.NewToZapLogPlugin(debugDeepMind, logger, logplugin.ToZapLogPluginLogLevel(logLevelExtractor), logplugin.ToZapLogPluginTransformer(stripPrefix))
@@ -22,6 +23,10 @@ func logLevelExtractor(in string) zapcore.Level {
 	// If the regex does not match the line, log to `INFO` so at least we see something by default.
 	groups := logLineRegex.FindStringSubmatch(in)
 	if len(groups) <= 3 {
+		if panicLineRegex.MatchString(in) {
+			return zap.ErrorLevel
+		}
+
 		return zap.InfoLevel
 	}
 

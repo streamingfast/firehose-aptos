@@ -3,7 +3,7 @@ base:
   data_dir: {data-dir}
   role: validator
   waypoint:
-    from_config: "0:8ed8af7da1411aa55ba5f60de1a470754ce16c46ee3c3a216492e73f7495a4a9"
+    from_config: "0:26ba2d3ad5a4c49d96745f751dfa0eac85f995102ab00ab07e25ccfb7daf6afc"
 consensus:
   max_block_size: 6000
   max_pruned_blocks_in_mem: 100
@@ -12,8 +12,8 @@ consensus:
   round_initial_timeout_ms: 1500
   safety_rules:
     backend:
-      type: on_disk_storage
-      path: secure_storage.json
+      type: rocks_db_storage
+      path: secure_storage_db
       namespace: ~
     logger:
       chan_size: 10000
@@ -30,7 +30,7 @@ consensus:
       from_file:
         identity_blob_path: {validator-identity-file}
         waypoint:
-          from_config: "0:8ed8af7da1411aa55ba5f60de1a470754ce16c46ee3c3a216492e73f7495a4a9"
+          from_config: "0:26ba2d3ad5a4c49d96745f751dfa0eac85f995102ab00ab07e25ccfb7daf6afc"
   sync_only: false
   channel_size: 30
   use_quorum_store: false
@@ -59,7 +59,7 @@ full_node_networks:
     runtime_threads: ~
     seed_addrs: {}
     seeds: {}
-    max_frame_size: 16777216
+    max_frame_size: 67108864
     enable_proxy_protocol: false
     ping_interval_ms: 10000
     ping_timeout_ms: 20000
@@ -78,14 +78,14 @@ full_node_networks:
     identity:
       type: from_file
       path: {vfn-identity-file}
-    listen_address: /ip4/0.0.0.0/tcp/50619
+    listen_address: /ip4/0.0.0.0/tcp/62048
     mutual_authentication: false
     network_id:
       private: vfn
     runtime_threads: ~
     seed_addrs: {}
     seeds: {}
-    max_frame_size: 16777216
+    max_frame_size: 67108864
     enable_proxy_protocol: false
     ping_interval_ms: 10000
     ping_timeout_ms: 20000
@@ -131,6 +131,7 @@ state_sync:
   data_streaming_service:
     global_summary_refresh_interval_ms: 50
     max_concurrent_requests: 2
+    max_concurrent_state_requests: 4
     max_data_stream_channel_sizes: 1000
     max_request_retry: 3
     max_notification_id_mappings: 2000
@@ -156,8 +157,9 @@ state_sync:
     max_epoch_chunk_size: 100
     max_lru_cache_size: 100
     max_network_channel_size: 4000
-    max_state_chunk_size: 1000
-    max_subscription_period_ms: 10000
+    max_network_chunk_bytes: 66846720
+    max_state_chunk_size: 2000
+    max_subscription_period_ms: 5000
     max_transaction_chunk_size: 1000
     max_transaction_output_chunk_size: 1000
     storage_summary_refresh_interval_ms: 50
@@ -168,13 +170,16 @@ storage:
   backup_service_address: "127.0.0.1:6186"
   dir: db
   storage_pruner_config:
-    enable_state_store_pruner: true
-    enable_ledger_pruner: true
-    state_store_prune_window: 1000000
-    ledger_prune_window: 10000000
-    ledger_pruning_batch_size: 500
-    state_store_pruning_batch_size: 1000
-    user_pruning_window_offset: 200000
+    ledger_pruner_config:
+      enable: true
+      prune_window: 10000000
+      batch_size: 500
+      user_pruning_window_offset: 200000
+    state_merkle_pruner_config:
+      enable: true
+      prune_window: 1000000
+      batch_size: 1000
+      user_pruning_window_offset: 200000
   target_snapshot_size: 100000
   rocksdb_configs:
     ledger_db_config:

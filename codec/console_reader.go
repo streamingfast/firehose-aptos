@@ -27,6 +27,7 @@ type ConsoleReader struct {
 
 	activeBlockStartTime time.Time
 	activeBlock          *pbaptos.Block
+	chainID              uint32
 	initRead             bool
 	stats                *consoleReaderStats
 }
@@ -91,11 +92,11 @@ func (r *ConsoleReader) next() (out *pbaptos.Block, err error) {
 
 		if !r.initRead {
 			if tokens[0] == LogInit {
-				if r.readInit(tokens[1:]); err != nil {
+				if err := r.readInit(tokens[1:]); err != nil {
 					return nil, lineError(line, err)
 				}
 			} else {
-				r.logger.Debug("received line with prefix %q but we did not see INIT yet, skipping line", zap.String("prefix", tokens[0]))
+				r.logger.Warn("received reader node line with but we did not see INIT yet, skipping line", zap.String("prefix", tokens[0]))
 			}
 
 			continue
@@ -162,9 +163,9 @@ func (r *ConsoleReader) buildScanner(reader io.Reader) *bufio.Scanner {
 }
 
 // Format:
-// FIRE INIT <client_name> <client_version> <fork> <firehose_major> <firehose_minor>
+// FIRE INIT <client_name> <client_version> <fork> <firehose_major> <firehose_minor> <chain_id>
 func (r *ConsoleReader) readInit(params []string) error {
-	if err := validateChunk(params, 5); err != nil {
+	if err := validateVariableChunk(params, 6, 7); err != nil {
 		return fmt.Errorf("invalid log line length: %w", err)
 	}
 
@@ -186,14 +187,28 @@ func (r *ConsoleReader) readInit(params []string) error {
 		return fmt.Errorf("only able to consume firehose format with major version 0, got %d", firehoseMajor)
 	}
 
+	chainIDString := ""
+	if len(params) == 6 {
+		chainIDString = params[5]
+	} else {
+		chainIDString = params[6]
+	}
+
+	chainID, err := strconv.ParseUint(chainIDString, 10, 32)
+	if err != nil {
+		return fmt.Errorf("invalid chain id %q: %w", chainIDString, err)
+	}
+
 	r.logger.Info("initialized console reader correclty",
 		zap.String("client_name", clientName),
 		zap.String("client_version", clientVersion),
 		zap.String("fork", fork),
 		zap.Uint64("firehose_major", firehoseMajor),
 		zap.Uint64("firehose_minor", firehoseMinor),
+		zap.Uint32("chain_id", uint32(chainID)),
 	)
 
+	r.chainID = uint32(chainID)
 	r.initRead = true
 
 	return nil
@@ -317,6 +332,21 @@ func validateChunk(params []string, count int) error {
 		return fmt.Errorf("%d fields required but found %d", count, len(params))
 	}
 	return nil
+}
+
+func validateVariableChunk(params []string, counts ...int) error {
+	for _, validCount := range counts {
+		if len(params) == validCount {
+			return nil
+		}
+	}
+
+	countStrings := make([]string, len(counts))
+	for i, validCount := range counts {
+		countStrings[i] = strconv.FormatUint(uint64(validCount), 10)
+	}
+
+	return fmt.Errorf("either %s fields required but found %d", countStrings, len(params))
 }
 
 func lineError(line string, source error) error {
