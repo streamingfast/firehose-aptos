@@ -43,15 +43,27 @@ func TestParseFromFile(t *testing.T) {
 		{
 			"malformed init",
 			[]string{
-				fireInitInvalid("wrong"),
+				fireInitCustom("wrong"),
 			},
-			EqualErrorAssertion(`invalid log line length: 5 fields required but found 1 (on line "FIRE INIT wrong")`),
+			EqualErrorAssertion(`invalid log line length: 6 or 7 fields required but found 1 (on line "FIRE INIT wrong")`),
 		},
 
 		{
 			"genesis",
 			[]string{
-				fireInit("aptos-node", "0.0.0", "aptos", "0", "0"),
+				fireInit(),
+
+				fireBlockStart(1),
+				fireTrx(tt.Transaction(t, 1, tt.TrxTypeGenesis, tt.Timestamp(t, "2020-01-02T15:04:05Z"))),
+				fireBlockEnd(1),
+			},
+			require.NoError,
+		},
+
+		{
+			"genesis with 'chain_id' field name in init",
+			[]string{
+				fireInitCustom("aptos-node 0.0.0 aptos 0 0 chain_id 4"),
 
 				fireBlockStart(1),
 				fireTrx(tt.Transaction(t, 1, tt.TrxTypeGenesis, tt.Timestamp(t, "2020-01-02T15:04:05Z"))),
@@ -67,7 +79,7 @@ func TestParseFromFile(t *testing.T) {
 				fireTrx(tt.Transaction(t, 2, tt.TrxTypeGenesis, tt.Timestamp(t, "2020-01-02T15:04:05Z"))),
 				fireBlockEnd(2),
 
-				fireInit("aptos-node", "0.0.0", "aptos", "0", "0"),
+				fireInit(),
 
 				fireBlockStart(1),
 				fireTrx(tt.Transaction(t, 1, tt.TrxTypeGenesis, tt.Timestamp(t, "2020-01-02T15:04:05Z"))),
@@ -79,7 +91,7 @@ func TestParseFromFile(t *testing.T) {
 		{
 			"new block start resets active one",
 			[]string{
-				fireInit("aptos-node", "0.0.0", "aptos", "0", "0"),
+				fireInit(),
 
 				fireBlockStart(1),
 				fireTrx(tt.Transaction(t, 1, tt.TrxTypeGenesis, tt.Timestamp(t, "2020-01-02T15:04:05Z"))),
@@ -93,7 +105,7 @@ func TestParseFromFile(t *testing.T) {
 		{
 			"multiple transaction in one block",
 			[]string{
-				fireInit("aptos-node", "0.0.0", "aptos", "0", "0"),
+				fireInit(),
 
 				fireBlockStart(1),
 				fireTrx(tt.Transaction(t, 1, tt.TrxTypeGenesis, tt.Timestamp(t, "2020-01-02T15:04:05Z"))),
@@ -107,7 +119,7 @@ func TestParseFromFile(t *testing.T) {
 		{
 			"multiple transaction in multiple block",
 			[]string{
-				fireInit("aptos-node", "0.0.0", "aptos", "0", "0"),
+				fireInit(),
 
 				fireBlockStart(1),
 				fireTrx(tt.Transaction(t, 1, tt.TrxTypeGenesis, tt.Timestamp(t, "2020-01-02T15:04:05Z"))),
@@ -127,17 +139,17 @@ func TestParseFromFile(t *testing.T) {
 		{
 			"init received multiple time",
 			[]string{
-				fireInit("aptos-node", "0.0.0", "aptos", "0", "0"),
+				fireInit(),
 
-				fireInit("aptos-node", "0.0.0", "aptos", "0", "0"),
+				fireInit(),
 			},
-			EqualErrorAssertion(`received INIT line while one has already been read (on line "FIRE INIT aptos-node 0.0.0 aptos 0 0")`),
+			EqualErrorAssertion(`received INIT line while one has already been read (on line "FIRE INIT aptos-node 0.0.0 aptos 0 0 4")`),
 		},
 
 		{
 			"block has no transasction",
 			[]string{
-				fireInit("aptos-node", "0.0.0", "aptos", "0", "0"),
+				fireInit(),
 
 				fireBlockStart(1),
 				fireBlockEnd(1),
@@ -148,7 +160,7 @@ func TestParseFromFile(t *testing.T) {
 		{
 			"no active block on block end",
 			[]string{
-				fireInit("aptos-node", "0.0.0", "aptos", "0", "0"),
+				fireInit(),
 
 				fireBlockEnd(1),
 			},
@@ -158,7 +170,7 @@ func TestParseFromFile(t *testing.T) {
 		{
 			"first trx is not block start boundary",
 			[]string{
-				fireInit("aptos-node", "0.0.0", "aptos", "0", "0"),
+				fireInit(),
 
 				fireBlockStart(1),
 				fireTrx(tt.Transaction(t, 1, tt.TrxTypeUser)),
@@ -170,7 +182,7 @@ func TestParseFromFile(t *testing.T) {
 		{
 			"first trx is not block start boundary after reset",
 			[]string{
-				fireInit("aptos-node", "0.0.0", "aptos", "0", "0"),
+				fireInit(),
 
 				fireBlockStart(1),
 				fireTrx(tt.Transaction(t, 1, tt.TrxTypeGenesis, tt.Timestamp(t, "2020-01-02T15:04:05Z"))),
@@ -184,7 +196,7 @@ func TestParseFromFile(t *testing.T) {
 		{
 			"multi trx is block start boundary",
 			[]string{
-				fireInit("aptos-node", "0.0.0", "aptos", "0", "0"),
+				fireInit(),
 
 				fireBlockStart(1),
 				fireTrx(tt.Transaction(t, 2, tt.TrxTypeGenesis, tt.Timestamp(t, "2020-01-02T15:04:05Z"))),
@@ -197,7 +209,7 @@ func TestParseFromFile(t *testing.T) {
 		{
 			"block end height does not match block start height",
 			[]string{
-				fireInit("aptos-node", "0.0.0", "aptos", "0", "0"),
+				fireInit(),
 
 				fireBlockStart(1),
 				fireTrx(tt.Transaction(t, 2, tt.TrxTypeGenesis, tt.Timestamp(t, "2020-01-02T15:04:05Z"))),
@@ -209,7 +221,7 @@ func TestParseFromFile(t *testing.T) {
 		{
 			"received trx while no block is active",
 			[]string{
-				fireInit("aptos-node", "0.0.0", "aptos", "0", "0"),
+				fireInit(),
 
 				fireTrx(tt.Transaction(t, 2, tt.TrxTypeGenesis, tt.Timestamp(t, "2020-01-02T15:04:05Z"))),
 			},
@@ -342,11 +354,11 @@ func generateSyntheticFirelogFile(filename string, lines ...string) error {
 	return os.WriteFile(filename, []byte(content), os.ModePerm)
 }
 
-func fireInit(clientName, clientVersion, fork, firehoseMajor, firehoseMinor string) string {
-	return fmt.Sprintf("FIRE INIT %s %s %s %s %s", clientName, clientVersion, fork, firehoseMajor, firehoseMinor)
+func fireInit() string {
+	return fireInitCustom("aptos-node 0.0.0 aptos 0 0 4")
 }
 
-func fireInitInvalid(data string) string {
+func fireInitCustom(data string) string {
 	return fmt.Sprintf("FIRE INIT %s", data)
 }
 

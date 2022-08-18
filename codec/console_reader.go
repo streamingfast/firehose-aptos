@@ -346,7 +346,7 @@ func validateVariableChunk(params []string, counts ...int) error {
 		countStrings[i] = strconv.FormatUint(uint64(validCount), 10)
 	}
 
-	return fmt.Errorf("either %s fields required but found %d", countStrings, len(params))
+	return fmt.Errorf("%s fields required but found %d", strings.Join(countStrings, " or "), len(params))
 }
 
 func lineError(line string, source error) error {
