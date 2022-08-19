@@ -138,7 +138,7 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 
 		extractorWorkindDir := mustReplaceDataDir(sfDataDir, viper.GetString("extractor-node-working-dir"))
 		syncStateFile := filepath.Join(extractorWorkindDir, "sync_state.json")
-		syncState, err := readNodeSyncState(syncStateFile)
+		syncState, err := readNodeSyncState(appLogger, syncStateFile)
 		if err != nil {
 			if !errors.Is(err, fs.ErrNotExist) {
 				return nil, fmt.Errorf("read node sync state: %w", err)

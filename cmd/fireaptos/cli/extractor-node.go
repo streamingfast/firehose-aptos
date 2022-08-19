@@ -132,14 +132,19 @@ type extractorNodeSyncState struct {
 	Version uint64 `json:"last_seen_version"`
 }
 
-func readNodeSyncState(path string) (state *extractorNodeSyncState, err error) {
+func readNodeSyncState(logger *zap.Logger, path string) (state *extractorNodeSyncState, err error) {
 	content, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("open file: %w", err)
 	}
 
+	if len(content) == 0 {
+		logger.Warn("reader node sync state file content is empty, this is unexpected, resetting sync state to version 0", zap.String("path", path))
+		return &extractorNodeSyncState{Version: 0}, nil
+	}
+
 	if err := json.Unmarshal(content, &state); err != nil {
-		return nil, fmt.Errorf("unmarshal file: %w", err)
+		return nil, fmt.Errorf("unmarshal file %q: %w", path, err)
 	}
 
 	return state, nil
