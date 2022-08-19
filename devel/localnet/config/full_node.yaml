@@ -3,7 +3,7 @@ base:
   data_dir: {data-dir}
   role: validator
   waypoint:
-    from_config: "0:26ba2d3ad5a4c49d96745f751dfa0eac85f995102ab00ab07e25ccfb7daf6afc"
+    from_config: "0:3102179ed0231ab9acc8e40f7ab216b64caa511c16def179cbc1a104833aa15d"
 consensus:
   max_block_size: 6000
   max_pruned_blocks_in_mem: 100
@@ -30,7 +30,7 @@ consensus:
       from_file:
         identity_blob_path: {validator-identity-file}
         waypoint:
-          from_config: "0:26ba2d3ad5a4c49d96745f751dfa0eac85f995102ab00ab07e25ccfb7daf6afc"
+          from_config: "0:3102179ed0231ab9acc8e40f7ab216b64caa511c16def179cbc1a104833aa15d"
   sync_only: false
   channel_size: 30
   use_quorum_store: false
@@ -59,7 +59,7 @@ full_node_networks:
     runtime_threads: ~
     seed_addrs: {}
     seeds: {}
-    max_frame_size: 67108864
+    max_frame_size: 4194304
     enable_proxy_protocol: false
     ping_interval_ms: 10000
     ping_timeout_ms: 20000
@@ -68,6 +68,7 @@ full_node_networks:
     max_inbound_connections: 100
     inbound_rate_limit_config: ~
     outbound_rate_limit_config: ~
+    max_message_size: 67108864
   - max_connection_delay_ms: 60000
     connection_backoff_base: 2
     connectivity_check_interval_ms: 5000
@@ -78,14 +79,14 @@ full_node_networks:
     identity:
       type: from_file
       path: {vfn-identity-file}
-    listen_address: /ip4/0.0.0.0/tcp/62048
+    listen_address: /ip4/0.0.0.0/tcp/49779
     mutual_authentication: false
     network_id:
       private: vfn
     runtime_threads: ~
     seed_addrs: {}
     seeds: {}
-    max_frame_size: 67108864
+    max_frame_size: 4194304
     enable_proxy_protocol: false
     ping_interval_ms: 10000
     ping_timeout_ms: 20000
@@ -94,6 +95,7 @@ full_node_networks:
     max_inbound_connections: 100
     inbound_rate_limit_config: ~
     outbound_rate_limit_config: ~
+    max_message_size: 67108864
 inspection_service:
   address: 0.0.0.0
   port: 9101
@@ -163,7 +165,7 @@ state_sync:
     max_transaction_chunk_size: 1000
     max_transaction_output_chunk_size: 1000
     storage_summary_refresh_interval_ms: 50
-sf_stream:
+firehose_stream:
   enabled: true
 storage:
   address: "127.0.0.1:6666"
@@ -172,28 +174,38 @@ storage:
   storage_pruner_config:
     ledger_pruner_config:
       enable: true
-      prune_window: 10000000
+      prune_window: 150000000
       batch_size: 500
       user_pruning_window_offset: 200000
     state_merkle_pruner_config:
       enable: true
-      prune_window: 1000000
+      prune_window: 80000000
       batch_size: 1000
       user_pruning_window_offset: 200000
   target_snapshot_size: 100000
+  max_num_nodes_per_lru_cache_shard: 8192
   rocksdb_configs:
     ledger_db_config:
       max_open_files: 5000
       max_total_wal_size: 1073741824
       max_background_jobs: 16
+      block_cache_size: 8388608
+      block_size: 4096
+      cache_index_and_filter_blocks: false
     state_merkle_db_config:
       max_open_files: 5000
       max_total_wal_size: 1073741824
       max_background_jobs: 16
+      block_cache_size: 8388608
+      block_size: 4096
+      cache_index_and_filter_blocks: false
     index_db_config:
       max_open_files: 1000
       max_total_wal_size: 1073741824
       max_background_jobs: 16
+      block_cache_size: 8388608
+      block_size: 4096
+      cache_index_and_filter_blocks: false
   enable_indexer: false
 test: ~
 validator_network:
@@ -213,7 +225,7 @@ validator_network:
   runtime_threads: ~
   seed_addrs: {}
   seeds: {}
-  max_frame_size: 8388608
+  max_frame_size: 4194304
   enable_proxy_protocol: false
   ping_interval_ms: 10000
   ping_timeout_ms: 20000
@@ -222,4 +234,5 @@ validator_network:
   max_inbound_connections: 100
   inbound_rate_limit_config: ~
   outbound_rate_limit_config: ~
+  max_message_size: 67108864
 failpoints: ~
