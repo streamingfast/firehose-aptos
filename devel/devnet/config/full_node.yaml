@@ -23,7 +23,7 @@ full_node_networks:
       seeds:
         {}
 
-sf_stream:
+firehose_stream:
   enabled: true
   starting_version: 0
 
