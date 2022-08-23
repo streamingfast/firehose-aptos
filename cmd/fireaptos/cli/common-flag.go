@@ -50,6 +50,13 @@ func init() {
 
 		cmd.Flags().Int("common-first-streamable-block", FirstStreamableBlock, "[COMMON] First streamable block of the chain, ")
 
+		// Chain
+		cmd.Flags().Int64("common-chain-id", -1, FlagDescription(`
+			[COMMON] The chain ID of the network we want to sync with, this is used to ensure we read data from the right network.
+			The flag must be explicitely provided, a negative will be rejected right away with an error. The chain id must be within
+			the numerical boundary of a uint32, used by: extractor, firehose
+		`))
+
 		// Authentication, metering and rate limiter plugins
 		cmd.Flags().String("common-auth-plugin", "null://", "[COMMON] Auth plugin URI, see streamingfast/dauth repository")
 		cmd.Flags().String("common-metering-plugin", "null://", "[COMMON] Metering plugin URI, see streamingfast/dmetering repository")

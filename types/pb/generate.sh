@@ -39,7 +39,7 @@ function main() {
 
   echo "generate.sh - `date` - `whoami`" > ./last_generate.txt
   echo "streamingfast/proto revision: `GIT_DIR=$PROTO/.git git rev-parse HEAD`" >> ./last_generate.txt
-  echo "streamingfast/firehose-aptos/proto revision: `GIT_DIR=$ROOT/.git git log -n 1 --pretty=format:%h -- proto`" >> ./last_generate.txt
+  echo "aptos-labs/aptos-core/crates/aptos-protos/proto revision: `GIT_DIR=$APTOS_ROOT/.git git log -n 1 --pretty=format:%h -- crates/aptos-protos/proto`" >> ./last_generate.txt
 }
 
 # usage:

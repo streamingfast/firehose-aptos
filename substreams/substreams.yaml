@@ -13,4 +13,4 @@ protobuf:
     - aptos/extractor/v1/extractor.proto
     - aptos/util/timestamp/timestamp.proto
   importPaths:
-    - ../proto
+    - ${APTOS_ROOT}/crates/aptos-protos/proto
