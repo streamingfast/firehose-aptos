@@ -1,11 +1,9 @@
 package cli
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"io/fs"
-	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -237,79 +235,6 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 			},
 		}, appLogger), nil
 	}
-}
-
-type bootstrapper struct {
-	nodeDataDir               string
-	nodeConfigFile            string
-	resolvedNodeConfigFile    string
-	nodeGenesisFile           string
-	nodeWaypointFile          string
-	nodeValidatorIdentityFile string
-	nodeVFNIdentityFile       string
-	logger                    *zap.Logger
-}
-
-func (b *bootstrapper) Bootstrap() error {
-	b.logger.Info("bootstraping node's configuration")
-
-	if err := makeDirs([]string{b.nodeDataDir}); err != nil {
-		return fmt.Errorf(`create "fireaptos" inside node's data dir: %w`, err)
-	}
-
-	configContent, err := os.ReadFile(b.nodeConfigFile)
-	if err != nil {
-		return fmt.Errorf("read config content: %w", err)
-	}
-
-	dataDir := tryToMakeAbsolutePath(b.logger, b.nodeDataDir)
-
-	b.logger.Info(`replacing occurrences of "{data-dir}" in config file`, zap.String("config_file", b.nodeConfigFile), zap.String("replacement", dataDir))
-	configContent = bytes.ReplaceAll(configContent, []byte("{data-dir}"), []byte(dataDir))
-
-	if b.nodeGenesisFile != "" {
-		genesisFile := tryToMakeAbsolutePath(b.logger, b.nodeGenesisFile)
-
-		b.logger.Info(`replacing occurrences of "{genesis-file}" in config file`, zap.String("config_file", b.nodeConfigFile), zap.String("replacement", genesisFile))
-		configContent = bytes.ReplaceAll(configContent, []byte("{genesis-file}"), []byte(genesisFile))
-	}
-
-	if b.nodeWaypointFile != "" {
-		waypointFile := tryToMakeAbsolutePath(b.logger, b.nodeWaypointFile)
-
-		b.logger.Info(`replacing occurrences of "{waypoint-file}" in config file`, zap.String("config_file", b.nodeConfigFile), zap.String("replacement", waypointFile))
-		configContent = bytes.ReplaceAll(configContent, []byte("{waypoint-file}"), []byte(waypointFile))
-	}
-
-	if b.nodeValidatorIdentityFile != "" {
-		validtorIdentityFile := tryToMakeAbsolutePath(b.logger, b.nodeValidatorIdentityFile)
-
-		b.logger.Info(`replacing occurrences of "{validator-identity-file}" in config file`, zap.String("config_file", b.nodeConfigFile), zap.String("replacement", validtorIdentityFile))
-		configContent = bytes.ReplaceAll(configContent, []byte("{validator-identity-file}"), []byte(validtorIdentityFile))
-	}
-
-	if b.nodeVFNIdentityFile != "" {
-		vfnIdentityFile := tryToMakeAbsolutePath(b.logger, b.nodeVFNIdentityFile)
-
-		b.logger.Info(`replacing occurrences of "{vfn-identity-file}" in config file`, zap.String("config_file", b.nodeConfigFile), zap.String("replacement", vfnIdentityFile))
-		configContent = bytes.ReplaceAll(configContent, []byte("{vfn-identity-file}"), []byte(vfnIdentityFile))
-	}
-
-	if err := os.WriteFile(b.resolvedNodeConfigFile, configContent, os.ModePerm); err != nil {
-		return fmt.Errorf("write resolved config file: %w", err)
-	}
-
-	return nil
-}
-
-func tryToMakeAbsolutePath(logger *zap.Logger, path string) string {
-	out, err := filepath.Abs(path)
-	if err == nil {
-		return out
-	}
-
-	logger.Warn("unable to make path absolute", zap.String("path", path), zap.Error(err))
-	return path
 }
 
 type nodeArgsByRole map[string]string
