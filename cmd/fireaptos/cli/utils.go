@@ -16,6 +16,7 @@ package cli
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -69,6 +70,27 @@ func makeDirs(directories []string) error {
 		if err != nil {
 			return fmt.Errorf("failed to create directory %q: %w", directory, err)
 		}
+	}
+
+	return nil
+}
+
+func copyFile(inPath, outPath string) error {
+	inFile, err := os.Open(inPath)
+	if err != nil {
+		return fmt.Errorf("open file: %w", err)
+	}
+	defer inFile.Close()
+
+	outFile, err := os.Create(outPath)
+	if err != nil {
+		return fmt.Errorf("create file: %w", err)
+	}
+	defer outFile.Close()
+
+	_, err = io.Copy(outFile, inFile)
+	if err != nil {
+		return fmt.Errorf("copy file %q to %q: %w", inPath, outPath)
 	}
 
 	return nil
