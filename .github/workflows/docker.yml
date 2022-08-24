@@ -6,9 +6,7 @@ on:
     tags:
       - "v*"
     branches:
-      - "main"
-      - "develop"
-      - "release/v*"
+      - "*"
 
 env:
   REGISTRY: ghcr.io
@@ -30,31 +28,6 @@ jobs:
       tags: ${{ steps.meta.outputs.tags }}
 
     steps:
-      - name: Freeing up some disk space for Rust build to complete
-        run: |
-          #!/usr/bin/env bash
-          echo "=============================================================================="
-          echo "Freeing up disk space on CI system"
-          echo "=============================================================================="
-
-          echo "Listing 100 largest packages"
-          dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n | tail -n 100
-          df -h
-
-          echo "Removing large packages"
-          sudo apt-get remove -y '^dotnet-.*'
-          sudo apt-get remove -y '^llvm-.*'
-          sudo apt-get remove -y '^temurin-.*'
-          sudo apt-get remove -y '^mongodb-.*'
-          sudo apt-get remove -y '^libclang-.*'
-          sudo apt-get remove -y azure-cli google-cloud-sdk microsoft-edge-stable libgl1-mesa-dri google-chrome-stable firefox powershell mono-devel
-          sudo apt-get autoremove -y
-          sudo apt-get clean
-
-          echo "Removing large directories"
-          rm -rf /usr/share/dotnet/
-          df -h
-
       - uses: actions/checkout@v3
 
       - name: Set up Go
@@ -107,9 +80,10 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=ref,event=tag
-            type=sha,prefix=,enable=${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release/v') }}
+            type=sha,prefix=,enable=true
             type=raw,enable=${{ github.ref == 'refs/heads/main' }},value=main
             type=raw,enable=${{ github.ref == 'refs/heads/develop' }},value=develop
+            type=raw,enable=${{ github.ref == 'refs/heads/devnet' }},value=devnet
             type=raw,enable=${{ startsWith(github.ref, 'refs/heads/release/v') }},value=${{ steps.extract_branch.outputs.release_train }}
           flavor: |
             latest=${{ startsWith(github.ref, 'refs/tags/') }}
