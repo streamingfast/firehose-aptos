@@ -53,7 +53,10 @@ func NewSuperviser(
 	if logToZap {
 		supervisor.RegisterLogPlugin(newToZapLogPlugin(debugDeepMind, nodelogger))
 	} else {
-		supervisor.RegisterLogPlugin(logplugin.NewToConsoleLogPlugin(debugDeepMind))
+		toConsolePlugin := logplugin.NewToConsoleLogPlugin(debugDeepMind)
+		toConsolePlugin.SetSkipBlankLines(true)
+
+		supervisor.RegisterLogPlugin(toConsolePlugin)
 	}
 
 	appLogger.Info("created aptos superviser", zap.Object("superviser", supervisor))
