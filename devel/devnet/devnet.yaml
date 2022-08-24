@@ -7,8 +7,8 @@ start:
   flags:
     extractor-node-config-file: "config/full_node.yaml"
     extractor-node-log-to-zap: false
-    extractor-node-genesis-file: "config/genesis.blob"
-    extractor-node-waypoint-file: "config/waypoint.txt"
+    extractor-node-genesis-file: "https://devnet.aptoslabs.com/genesis.blob"
+    extractor-node-waypoint-file: "https://devnet.aptoslabs.com/waypoint.txt"
 
     # Temporary override for easier testing when not fully synced yet, in production, should not be set
     firehose-real-time-tolerance: 999999999s
