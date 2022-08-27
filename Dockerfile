@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1.2
 
-ARG APTOS_VERSION=nightly
+ARG APTOS_VERSION=devnet
 
-FROM aptoslab/validator:$APTOS_VERSION as chain
+FROM aptoslabs/validator:$APTOS_VERSION as chain
 
 FROM ubuntu:20.04
 
