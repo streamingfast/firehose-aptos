@@ -3,13 +3,16 @@ base:
   data_dir: {data-dir}
   role: validator
   waypoint:
-    from_config: "0:3102179ed0231ab9acc8e40f7ab216b64caa511c16def179cbc1a104833aa15d"
+    from_config: "0:f7f746b64ed9c77be826a076913a2f298b51b7923083f2c67e965d3d791e7f98"
 consensus:
-  max_block_size: 6000
+  max_block_txns: 6000
+  max_block_bytes: 5242880
   max_pruned_blocks_in_mem: 100
   mempool_executed_txn_timeout_ms: 1000
   mempool_txn_pull_timeout_ms: 1000
   round_initial_timeout_ms: 1500
+  round_timeout_backoff_exponent_base: 1.2
+  round_timeout_backoff_max_exponent: 6
   safety_rules:
     backend:
       type: rocks_db_storage
@@ -20,7 +23,10 @@ consensus:
       enable_backtrace: false
       is_async: true
       level: INFO
-      console_port: 6669
+      console_port: ~
+      enable_telemetry_remote_log: true
+      enable_telemetry_flush: true
+      telemetry_level: ERROR
     service:
       type: thread
     test: ~
@@ -30,17 +36,16 @@ consensus:
       from_file:
         identity_blob_path: {validator-identity-file}
         waypoint:
-          from_config: "0:3102179ed0231ab9acc8e40f7ab216b64caa511c16def179cbc1a104833aa15d"
+          from_config: "0:f7f746b64ed9c77be826a076913a2f298b51b7923083f2c67e965d3d791e7f98"
   sync_only: false
   channel_size: 30
   use_quorum_store: false
   quorum_store_pull_timeout_ms: 1000
-  quorum_store_poll_count: 20
+  quorum_store_poll_count: 5
   intra_consensus_channel_buffer_size: 10
 execution:
   genesis_file_location: {genesis-file}
-  network_timeout_ms: 30000
-  concurrency_level: 1
+  concurrency_level: 8
   num_proof_reading_threads: 32
 full_node_networks:
   - max_connection_delay_ms: 60000
@@ -63,7 +68,7 @@ full_node_networks:
     enable_proxy_protocol: false
     ping_interval_ms: 10000
     ping_timeout_ms: 20000
-    ping_failures_tolerated: 5
+    ping_failures_tolerated: 3
     max_outbound_connections: 0
     max_inbound_connections: 100
     inbound_rate_limit_config: ~
@@ -79,7 +84,7 @@ full_node_networks:
     identity:
       type: from_file
       path: {vfn-identity-file}
-    listen_address: /ip4/0.0.0.0/tcp/49779
+    listen_address: /ip4/0.0.0.0/tcp/63749
     mutual_authentication: false
     network_id:
       private: vfn
@@ -90,7 +95,7 @@ full_node_networks:
     enable_proxy_protocol: false
     ping_interval_ms: 10000
     ping_timeout_ms: 20000
-    ping_failures_tolerated: 5
+    ping_failures_tolerated: 3
     max_outbound_connections: 0
     max_inbound_connections: 100
     inbound_rate_limit_config: ~
@@ -106,9 +111,13 @@ logger:
   enable_backtrace: false
   is_async: true
   level: DEBUG
-  console_port: 6669
+  console_port: ~
+  enable_telemetry_remote_log: true
+  enable_telemetry_flush: true
+  telemetry_level: ERROR
 mempool:
-  capacity: 1000000
+  capacity: 2000000
+  capacity_bytes: 2147483648
   capacity_per_user: 100
   default_failovers: 3
   max_broadcasts_per_peer: 1
@@ -116,6 +125,7 @@ mempool:
   shared_mempool_ack_timeout_ms: 2000
   shared_mempool_backoff_interval_ms: 30000
   shared_mempool_batch_size: 100
+  shared_mempool_max_batch_bytes: 64880640
   shared_mempool_max_concurrent_inbound_syncs: 4
   shared_mempool_tick_interval_ms: 50
   system_transaction_timeout_secs: 600
@@ -129,14 +139,20 @@ api:
   enabled: true
   address: "0.0.0.0:8080"
   failpoints_enabled: false
+  json_output_enabled: true
+  bcs_output_enabled: true
+  encode_submission_enabled: true
+  transaction_submission_enabled: true
+  transaction_simulation_enabled: true
+  max_submit_transaction_batch_size: 100
 state_sync:
   data_streaming_service:
     global_summary_refresh_interval_ms: 50
-    max_concurrent_requests: 2
-    max_concurrent_state_requests: 4
-    max_data_stream_channel_sizes: 1000
+    max_concurrent_requests: 3
+    max_concurrent_state_requests: 6
+    max_data_stream_channel_sizes: 300
     max_request_retry: 3
-    max_notification_id_mappings: 2000
+    max_notification_id_mappings: 300
     progress_check_interval_ms: 100
   aptos_data_client:
     max_num_in_flight_priority_polls: 10
@@ -159,11 +175,11 @@ state_sync:
     max_epoch_chunk_size: 100
     max_lru_cache_size: 100
     max_network_channel_size: 4000
-    max_network_chunk_bytes: 66846720
+    max_network_chunk_bytes: 64880640
     max_state_chunk_size: 2000
     max_subscription_period_ms: 5000
-    max_transaction_chunk_size: 1000
-    max_transaction_output_chunk_size: 1000
+    max_transaction_chunk_size: 2000
+    max_transaction_output_chunk_size: 2000
     storage_summary_refresh_interval_ms: 50
 firehose_stream:
   enabled: true
@@ -179,9 +195,12 @@ storage:
       user_pruning_window_offset: 200000
     state_merkle_pruner_config:
       enable: true
+      prune_window: 100000
+      batch_size: 1000
+    epoch_snapshot_pruner_config:
+      enable: true
       prune_window: 80000000
       batch_size: 1000
-      user_pruning_window_offset: 200000
   target_snapshot_size: 100000
   max_num_nodes_per_lru_cache_shard: 8192
   rocksdb_configs:
@@ -229,7 +248,7 @@ validator_network:
   enable_proxy_protocol: false
   ping_interval_ms: 10000
   ping_timeout_ms: 20000
-  ping_failures_tolerated: 5
+  ping_failures_tolerated: 3
   max_outbound_connections: 4
   max_inbound_connections: 100
   inbound_rate_limit_config: ~
