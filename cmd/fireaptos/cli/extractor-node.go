@@ -111,13 +111,14 @@ func getMindreaderLogPlugin(
 		}
 
 		err := json.NewEncoder(syncStateFileWriter).Encode(extractorNodeSyncState{
-			// FIXME: Right now we have the real version because our "Block" are actual Aptos transaction
-			// but if we change so that a `Block` becomes a set of transactions, then we need to change
-			// here.
-			Version: block.Num(),
+			BlockNum: block.Num(),
 		})
 		if err != nil {
 			return fmt.Errorf("encode sync state to file: %w", err)
+		}
+
+		if err := syncStateFileWriter.Sync(); err != nil {
+			return fmt.Errorf("filesystem sync of sync state file: %w", err)
 		}
 
 		onLastBlockSeen(block.Num())
@@ -129,7 +130,10 @@ func getMindreaderLogPlugin(
 }
 
 type extractorNodeSyncState struct {
-	Version uint64 `json:"last_seen_version"`
+	BlockNum uint64 `json:"last_seen_block_num"`
+
+	// Deprecated: There for backward compatibility reading
+	Version uint64 `json:"last_seen_version,omitempty"`
 }
 
 func readNodeSyncState(logger *zap.Logger, path string) (state *extractorNodeSyncState, err error) {
@@ -139,13 +143,21 @@ func readNodeSyncState(logger *zap.Logger, path string) (state *extractorNodeSyn
 	}
 
 	if len(content) == 0 {
-		logger.Warn("reader node sync state file content is empty, this is unexpected, resetting sync state to version 0", zap.String("path", path))
-		return &extractorNodeSyncState{Version: 0}, nil
+		logger.Warn("reader node sync state file content is empty, this is unexpected, resetting sync state to block num 0", zap.String("path", path))
+		return &extractorNodeSyncState{BlockNum: 0}, nil
 	}
 
 	if err := json.Unmarshal(content, &state); err != nil {
 		return nil, fmt.Errorf("unmarshal file %q: %w", path, err)
 	}
+
+	if state.Version != 0 && state.BlockNum == 0 {
+		// Once we remove the deprecated `Version` struct and it's removed, we should remove that (and the `state.Version = 0` below)
+		logger.Info("converting wrong 'last_seen_version' field in sync state file to 'last_seen_block_num' (which is accurately represents what was actually stored in 'last_seen_version')")
+		state.BlockNum = state.Version
+	}
+
+	state.Version = 0
 
 	return state, nil
 }

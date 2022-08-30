@@ -142,7 +142,7 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 				return nil, fmt.Errorf("read node sync state: %w", err)
 			}
 
-			syncState = &extractorNodeSyncState{Version: 0}
+			syncState = &extractorNodeSyncState{BlockNum: 0}
 		}
 		appLogger.Info("inital sync state used to restart node", zap.Reflect("state", syncState))
 
@@ -152,7 +152,7 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 			nodeDataDir,
 			debugDeepMind,
 			logToZap,
-			syncState.Version,
+			syncState.BlockNum,
 			appLogger,
 			supervisedProcessLogger,
 		)

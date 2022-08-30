@@ -90,7 +90,7 @@ func copyFile(inPath, outPath string) error {
 
 	_, err = io.Copy(outFile, inFile)
 	if err != nil {
-		return fmt.Errorf("copy file %q to %q: %w", inPath, outPath)
+		return fmt.Errorf("copy file %q to %q: %w", inPath, outPath, err)
 	}
 
 	return nil
