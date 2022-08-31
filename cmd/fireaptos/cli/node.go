@@ -10,6 +10,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/streamingfast/bstream"
 	"github.com/streamingfast/bstream/blockstream"
 	"github.com/streamingfast/dlauncher/launcher"
 	"github.com/streamingfast/firehose-aptos/nodemanager"
@@ -142,8 +143,12 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 				return nil, fmt.Errorf("read node sync state: %w", err)
 			}
 
-			syncState = &extractorNodeSyncState{BlockNum: 0}
+			initialStartBlock := bstream.GetProtocolFirstStreamableBlock
+
+			appLogger.Info("overriding initial node sync state based to be first streamable block", zap.Uint64("starting_block", initialStartBlock))
+			syncState = &extractorNodeSyncState{BlockNum: initialStartBlock}
 		}
+
 		appLogger.Info("inital sync state used to restart node", zap.Reflect("state", syncState))
 
 		superviser := nodemanager.NewSuperviser(

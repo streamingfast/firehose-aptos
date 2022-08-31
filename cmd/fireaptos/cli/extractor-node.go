@@ -161,3 +161,12 @@ func readNodeSyncState(logger *zap.Logger, path string) (state *extractorNodeSyn
 
 	return state, nil
 }
+
+func writeNodeSyncState(logger *zap.Logger, state *extractorNodeSyncState, path string) (err error) {
+	data, err := json.Marshal(state)
+	if err != nil {
+		return fmt.Errorf("marshal json: %w", err)
+	}
+
+	return os.WriteFile(path, data, os.ModePerm)
+}
