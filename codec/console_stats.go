@@ -35,7 +35,7 @@ func (s *consoleReaderStats) StartPeriodicLogToZap(ctx context.Context, logger *
 		for {
 			select {
 			case <-ticker.C:
-				logger.Info("extractor read statistics", s.ZapFields()...)
+				logger.Info("reader read statistics", s.ZapFields()...)
 			case <-ctx.Done():
 				return
 			}

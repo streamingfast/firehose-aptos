@@ -81,11 +81,11 @@ func (x MoveTypes) String() string {
 }
 
 func (MoveTypes) Descriptor() protoreflect.EnumDescriptor {
-	return file_aptos_extractor_v1_extractor_proto_enumTypes[0].Descriptor()
+	return file_aptos_reader_v1_reader_proto_enumTypes[0].Descriptor()
 }
 
 func (MoveTypes) Type() protoreflect.EnumType {
-	return &file_aptos_extractor_v1_extractor_proto_enumTypes[0]
+	return &file_aptos_reader_v1_reader_proto_enumTypes[0]
 }
 
 func (x MoveTypes) Number() protoreflect.EnumNumber {
@@ -94,7 +94,7 @@ func (x MoveTypes) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use MoveTypes.Descriptor instead.
 func (MoveTypes) EnumDescriptor() ([]byte, []int) {
-	return file_aptos_extractor_v1_extractor_proto_rawDescGZIP(), []int{0}
+	return file_aptos_reader_v1_reader_proto_rawDescGZIP(), []int{0}
 }
 
 type MoveAbility int32
@@ -133,11 +133,11 @@ func (x MoveAbility) String() string {
 }
 
 func (MoveAbility) Descriptor() protoreflect.EnumDescriptor {
-	return file_aptos_extractor_v1_extractor_proto_enumTypes[1].Descriptor()
+	return file_aptos_reader_v1_reader_proto_enumTypes[1].Descriptor()
 }
 
 func (MoveAbility) Type() protoreflect.EnumType {
-	return &file_aptos_extractor_v1_extractor_proto_enumTypes[1]
+	return &file_aptos_reader_v1_reader_proto_enumTypes[1]
 }
 
 func (x MoveAbility) Number() protoreflect.EnumNumber {
@@ -146,7 +146,7 @@ func (x MoveAbility) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use MoveAbility.Descriptor instead.
 func (MoveAbility) EnumDescriptor() ([]byte, []int) {
-	return file_aptos_extractor_v1_extractor_proto_rawDescGZIP(), []int{1}
+	return file_aptos_reader_v1_reader_proto_rawDescGZIP(), []int{1}
 }
 
 type Transaction_TransactionType int32
@@ -185,11 +185,11 @@ func (x Transaction_TransactionType) String() string {
 }
 
 func (Transaction_TransactionType) Descriptor() protoreflect.EnumDescriptor {
-	return file_aptos_extractor_v1_extractor_proto_enumTypes[2].Descriptor()
+	return file_aptos_reader_v1_reader_proto_enumTypes[2].Descriptor()
 }
 
 func (Transaction_TransactionType) Type() protoreflect.EnumType {
-	return &file_aptos_extractor_v1_extractor_proto_enumTypes[2]
+	return &file_aptos_reader_v1_reader_proto_enumTypes[2]
 }
 
 func (x Transaction_TransactionType) Number() protoreflect.EnumNumber {
@@ -198,7 +198,7 @@ func (x Transaction_TransactionType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Transaction_TransactionType.Descriptor instead.
 func (Transaction_TransactionType) EnumDescriptor() ([]byte, []int) {
-	return file_aptos_extractor_v1_extractor_proto_rawDescGZIP(), []int{1, 0}
+	return file_aptos_reader_v1_reader_proto_rawDescGZIP(), []int{1, 0}
 }
 
 type WriteSet_WriteSetType int32
@@ -231,11 +231,11 @@ func (x WriteSet_WriteSetType) String() string {
 }
 
 func (WriteSet_WriteSetType) Descriptor() protoreflect.EnumDescriptor {
-	return file_aptos_extractor_v1_extractor_proto_enumTypes[3].Descriptor()
+	return file_aptos_reader_v1_reader_proto_enumTypes[3].Descriptor()
 }
 
 func (WriteSet_WriteSetType) Type() protoreflect.EnumType {
-	return &file_aptos_extractor_v1_extractor_proto_enumTypes[3]
+	return &file_aptos_reader_v1_reader_proto_enumTypes[3]
 }
 
 func (x WriteSet_WriteSetType) Number() protoreflect.EnumNumber {
@@ -244,7 +244,7 @@ func (x WriteSet_WriteSetType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use WriteSet_WriteSetType.Descriptor instead.
 func (WriteSet_WriteSetType) EnumDescriptor() ([]byte, []int) {
-	return file_aptos_extractor_v1_extractor_proto_rawDescGZIP(), []int{11, 0}
+	return file_aptos_reader_v1_reader_proto_rawDescGZIP(), []int{11, 0}
 }
 
 type WriteSetChange_Type int32
@@ -289,11 +289,11 @@ func (x WriteSetChange_Type) String() string {
 }
 
 func (WriteSetChange_Type) Descriptor() protoreflect.EnumDescriptor {
-	return file_aptos_extractor_v1_extractor_proto_enumTypes[4].Descriptor()
+	return file_aptos_reader_v1_reader_proto_enumTypes[4].Descriptor()
 }
 
 func (WriteSetChange_Type) Type() protoreflect.EnumType {
-	return &file_aptos_extractor_v1_extractor_proto_enumTypes[4]
+	return &file_aptos_reader_v1_reader_proto_enumTypes[4]
 }
 
 func (x WriteSetChange_Type) Number() protoreflect.EnumNumber {
@@ -302,7 +302,7 @@ func (x WriteSetChange_Type) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use WriteSetChange_Type.Descriptor instead.
 func (WriteSetChange_Type) EnumDescriptor() ([]byte, []int) {
-	return file_aptos_extractor_v1_extractor_proto_rawDescGZIP(), []int{14, 0}
+	return file_aptos_reader_v1_reader_proto_rawDescGZIP(), []int{14, 0}
 }
 
 type TransactionPayload_Type int32
@@ -338,11 +338,11 @@ func (x TransactionPayload_Type) String() string {
 }
 
 func (TransactionPayload_Type) Descriptor() protoreflect.EnumDescriptor {
-	return file_aptos_extractor_v1_extractor_proto_enumTypes[5].Descriptor()
+	return file_aptos_reader_v1_reader_proto_enumTypes[5].Descriptor()
 }
 
 func (TransactionPayload_Type) Type() protoreflect.EnumType {
-	return &file_aptos_extractor_v1_extractor_proto_enumTypes[5]
+	return &file_aptos_reader_v1_reader_proto_enumTypes[5]
 }
 
 func (x TransactionPayload_Type) Number() protoreflect.EnumNumber {
@@ -351,7 +351,7 @@ func (x TransactionPayload_Type) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use TransactionPayload_Type.Descriptor instead.
 func (TransactionPayload_Type) EnumDescriptor() ([]byte, []int) {
-	return file_aptos_extractor_v1_extractor_proto_rawDescGZIP(), []int{23, 0}
+	return file_aptos_reader_v1_reader_proto_rawDescGZIP(), []int{23, 0}
 }
 
 type MoveFunction_Visibility int32
@@ -387,11 +387,11 @@ func (x MoveFunction_Visibility) String() string {
 }
 
 func (MoveFunction_Visibility) Descriptor() protoreflect.EnumDescriptor {
-	return file_aptos_extractor_v1_extractor_proto_enumTypes[6].Descriptor()
+	return file_aptos_reader_v1_reader_proto_enumTypes[6].Descriptor()
 }
 
 func (MoveFunction_Visibility) Type() protoreflect.EnumType {
-	return &file_aptos_extractor_v1_extractor_proto_enumTypes[6]
+	return &file_aptos_reader_v1_reader_proto_enumTypes[6]
 }
 
 func (x MoveFunction_Visibility) Number() protoreflect.EnumNumber {
@@ -400,7 +400,7 @@ func (x MoveFunction_Visibility) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use MoveFunction_Visibility.Descriptor instead.
 func (MoveFunction_Visibility) EnumDescriptor() ([]byte, []int) {
-	return file_aptos_extractor_v1_extractor_proto_rawDescGZIP(), []int{30, 0}
+	return file_aptos_reader_v1_reader_proto_rawDescGZIP(), []int{30, 0}
 }
 
 type Signature_Type int32
@@ -436,11 +436,11 @@ func (x Signature_Type) String() string {
 }
 
 func (Signature_Type) Descriptor() protoreflect.EnumDescriptor {
-	return file_aptos_extractor_v1_extractor_proto_enumTypes[7].Descriptor()
+	return file_aptos_reader_v1_reader_proto_enumTypes[7].Descriptor()
 }
 
 func (Signature_Type) Type() protoreflect.EnumType {
-	return &file_aptos_extractor_v1_extractor_proto_enumTypes[7]
+	return &file_aptos_reader_v1_reader_proto_enumTypes[7]
 }
 
 func (x Signature_Type) Number() protoreflect.EnumNumber {
@@ -449,7 +449,7 @@ func (x Signature_Type) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Signature_Type.Descriptor instead.
 func (Signature_Type) EnumDescriptor() ([]byte, []int) {
-	return file_aptos_extractor_v1_extractor_proto_rawDescGZIP(), []int{40, 0}
+	return file_aptos_reader_v1_reader_proto_rawDescGZIP(), []int{40, 0}
 }
 
 type AccountSignature_Type int32
@@ -482,11 +482,11 @@ func (x AccountSignature_Type) String() string {
 }
 
 func (AccountSignature_Type) Descriptor() protoreflect.EnumDescriptor {
-	return file_aptos_extractor_v1_extractor_proto_enumTypes[8].Descriptor()
+	return file_aptos_reader_v1_reader_proto_enumTypes[8].Descriptor()
 }
 
 func (AccountSignature_Type) Type() protoreflect.EnumType {
-	return &file_aptos_extractor_v1_extractor_proto_enumTypes[8]
+	return &file_aptos_reader_v1_reader_proto_enumTypes[8]
 }
 
 func (x AccountSignature_Type) Number() protoreflect.EnumNumber {
@@ -495,7 +495,7 @@ func (x AccountSignature_Type) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use AccountSignature_Type.Descriptor instead.
 func (AccountSignature_Type) EnumDescriptor() ([]byte, []int) {
-	return file_aptos_extractor_v1_extractor_proto_rawDescGZIP(), []int{44, 0}
+	return file_aptos_reader_v1_reader_proto_rawDescGZIP(), []int{44, 0}
 }
 
 // A block on Aptos holds transactions in chronological order (ordered by a transactions monotonically increasing `version` field)
@@ -527,7 +527,7 @@ type Block struct {
 func (x *Block) Reset() {
 	*x = Block{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_aptos_extractor_v1_extractor_proto_msgTypes[0]
+		mi := &file_aptos_reader_v1_reader_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -540,7 +540,7 @@ func (x *Block) String() string {
 func (*Block) ProtoMessage() {}
 
 func (x *Block) ProtoReflect() protoreflect.Message {
-	mi := &file_aptos_extractor_v1_extractor_proto_msgTypes[0]
+	mi := &file_aptos_reader_v1_reader_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -553,7 +553,7 @@ func (x *Block) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Block.ProtoReflect.Descriptor instead.
 func (*Block) Descriptor() ([]byte, []int) {
-	return file_aptos_extractor_v1_extractor_proto_rawDescGZIP(), []int{0}
+	return file_aptos_reader_v1_reader_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Block) GetTimestamp() *timestamp.Timestamp {
@@ -611,7 +611,7 @@ type Transaction struct {
 func (x *Transaction) Reset() {
 	*x = Transaction{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_aptos_extractor_v1_extractor_proto_msgTypes[1]
+		mi := &file_aptos_reader_v1_reader_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -624,7 +624,7 @@ func (x *Transaction) String() string {
 func (*Transaction) ProtoMessage() {}
 
 func (x *Transaction) ProtoReflect() protoreflect.Message {
-	mi := &file_aptos_extractor_v1_extractor_proto_msgTypes[1]
+	mi := &file_aptos_reader_v1_reader_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -637,7 +637,7 @@ func (x *Transaction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Transaction.ProtoReflect.Descriptor instead.
 func (*Transaction) Descriptor() ([]byte, []int) {
-	return file_aptos_extractor_v1_extractor_proto_rawDescGZIP(), []int{1}
+	return file_aptos_reader_v1_reader_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Transaction) GetTimestamp() *timestamp.Timestamp {
@@ -759,7 +759,7 @@ type TransactionTrimmed struct {
 func (x *TransactionTrimmed) Reset() {
 	*x = TransactionTrimmed{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_aptos_extractor_v1_extractor_proto_msgTypes[2]
+		mi := &file_aptos_reader_v1_reader_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -772,7 +772,7 @@ func (x *TransactionTrimmed) String() string {
 func (*TransactionTrimmed) ProtoMessage() {}
 
 func (x *TransactionTrimmed) ProtoReflect() protoreflect.Message {
-	mi := &file_aptos_extractor_v1_extractor_proto_msgTypes[2]
+	mi := &file_aptos_reader_v1_reader_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -785,7 +785,7 @@ func (x *TransactionTrimmed) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TransactionTrimmed.ProtoReflect.Descriptor instead.
 func (*TransactionTrimmed) Descriptor() ([]byte, []int) {
-	return file_aptos_extractor_v1_extractor_proto_rawDescGZIP(), []int{2}
+	return file_aptos_reader_v1_reader_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *TransactionTrimmed) GetTimestamp() *timestamp.Timestamp {
@@ -818,7 +818,7 @@ type BlockMetadataTransaction struct {
 func (x *BlockMetadataTransaction) Reset() {
 	*x = BlockMetadataTransaction{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_aptos_extractor_v1_extractor_proto_msgTypes[3]
+		mi := &file_aptos_reader_v1_reader_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -831,7 +831,7 @@ func (x *BlockMetadataTransaction) String() string {
 func (*BlockMetadataTransaction) ProtoMessage() {}
 
 func (x *BlockMetadataTransaction) ProtoReflect() protoreflect.Message {
-	mi := &file_aptos_extractor_v1_extractor_proto_msgTypes[3]
+	mi := &file_aptos_reader_v1_extractor_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {

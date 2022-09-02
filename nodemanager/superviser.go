@@ -33,13 +33,13 @@ func NewSuperviser(
 	binary string,
 	arguments []string,
 	dataDir string,
-	debugDeepMind bool,
+	debugFirehose bool,
 	logToZap bool,
 	lastSeenBlockNum uint64,
 	appLogger *zap.Logger,
 	nodelogger *zap.Logger,
 ) *Superviser {
-	// Ensure process manager line buffer is large enough (50 MiB) for our Deep Mind instrumentation outputting lot's of text.
+	// Ensure process manager line buffer is large enough (50 MiB) for our Firehose instrumentation outputting lot's of text.
 	overseer.DEFAULT_LINE_BUFFER_SIZE = 50 * 1024 * 1024
 
 	supervisor := &Superviser{
@@ -51,9 +51,9 @@ func NewSuperviser(
 	}
 
 	if logToZap {
-		supervisor.RegisterLogPlugin(newToZapLogPlugin(debugDeepMind, nodelogger))
+		supervisor.RegisterLogPlugin(newToZapLogPlugin(debugFirehose, nodelogger))
 	} else {
-		toConsolePlugin := logplugin.NewToConsoleLogPlugin(debugDeepMind)
+		toConsolePlugin := logplugin.NewToConsoleLogPlugin(debugFirehose)
 		toConsolePlugin.SetSkipBlankLines(true)
 
 		supervisor.RegisterLogPlugin(toConsolePlugin)

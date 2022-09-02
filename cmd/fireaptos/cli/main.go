@@ -83,7 +83,7 @@ func Main() {
 	derr.Check("aptos-blockchain", RootCmd.Execute())
 }
 
-var startCmdExample = `fireaptos start extractor`
+var startCmdExample = `fireaptos start reader`
 var startCmdHelpTemplate = `Usage:{{if .Runnable}}
   {{.UseLine}}{{end}} [all|command1 [command2...]]{{if gt (len .Aliases) 0}}
 

@@ -8,15 +8,15 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-// This file configures a logging extractor that transforms log lines received from the blockchain process running
+// This file configures a logging reader that transforms log lines received from the blockchain process running
 // and then logs them inside the Firehose stack logging system.
 //
 // So our regex look like the one below, extracting the `info` value from a group in the regexp.
 var logLineRegex = regexp.MustCompile("^[0123][0-9]{3}-[0-9]{1,2}-[0-9]{1,2}T[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}\\.[0-9]+Z\\s*(\\[.*\\])?\\s*(ERROR|WARN|DEBUG|INFO)\\s*(.*)")
 var panicLineRegex = regexp.MustCompile("^thread '.*' panicked")
 
-func newToZapLogPlugin(debugDeepMind bool, logger *zap.Logger) *logplugin.ToZapLogPlugin {
-	return logplugin.NewToZapLogPlugin(debugDeepMind, logger, logplugin.ToZapLogPluginLogLevel(logLevelExtractor), logplugin.ToZapLogPluginTransformer(stripPrefix))
+func newToZapLogPlugin(debugFirehose bool, logger *zap.Logger) *logplugin.ToZapLogPlugin {
+	return logplugin.NewToZapLogPlugin(debugFirehose, logger, logplugin.ToZapLogPluginLogLevel(logLevelreader), logplugin.ToZapLogPluginTransformer(stripPrefix))
 }
 
 func logLevelExtractor(in string) zapcore.Level {

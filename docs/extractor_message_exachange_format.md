@@ -1,4 +1,4 @@
-## Extractor Message Exchange Format
+## reader Message Exchange Format
 
 This documents outlines what is the actual format for messages exchanges between the instrumented process and the Firehose stack that is consuming those message to feed them in the block flow.
 

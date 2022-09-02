@@ -124,7 +124,7 @@ func (r *ConsoleReader) next() (out *pbaptos.Block, err error) {
 
 		default:
 			if r.logger.Core().Enabled(zap.DebugLevel) {
-				r.logger.Debug("skipping unknown deep mind log line", zap.String("line", line))
+				r.logger.Debug("skipping unknown firehose log line", zap.String("line", line))
 			}
 
 			continue

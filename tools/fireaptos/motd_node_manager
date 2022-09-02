@@ -9,7 +9,7 @@ Welcome to this node manager pod, common commands:
 Node manager commands (aptos-... <tab> to show all):
  - Check if running                   aptos-is-running
 
- - Debug Deep Mind logs for 30s       aptos-debug-deep-mind-30s
+ - Debug Firehose logs for 30s       aptos-debug-firehose-logs-30s
  - Stop instance                      aptos-maintenance
  - Start or restart instance          aptos-resume
 
