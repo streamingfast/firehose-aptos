@@ -6,7 +6,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/spf13/cobra"
-	pbaptos "github.com/streamingfast/firehose-aptos/types/pb/aptos/reader/v1"
+	pbaptos "github.com/streamingfast/firehose-aptos/types/pb/sf/aptos/reader/v1"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 

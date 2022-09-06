@@ -20,7 +20,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/streamingfast/bstream"
-	pbaptos "github.com/streamingfast/firehose-aptos/types/pb/aptos/reader/v1"
+	pbaptos "github.com/streamingfast/firehose-aptos/types/pb/sf/aptos/reader/v1"
 	sftools "github.com/streamingfast/sf-tools"
 )
 
