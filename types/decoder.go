@@ -16,9 +16,9 @@ package types
 
 import (
 	"fmt"
+	"github.com/streamingfast/firehose-aptos/types/pb/sf/aptos/reader/v1"
 
 	"github.com/streamingfast/bstream"
-	pbaptos "github.com/streamingfast/firehose-aptos/types/pb/aptos/reader/v1"
 	pbbstream "github.com/streamingfast/pbgo/sf/bstream/v1"
 	"google.golang.org/protobuf/proto"
 )

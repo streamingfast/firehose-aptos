@@ -1,10 +1,10 @@
 package tt
 
 import (
+	"github.com/streamingfast/firehose-aptos/types/pb/sf/aptos/reader/v1"
+	"github.com/streamingfast/firehose-aptos/types/pb/sf/aptos/util/timestamp"
 	"time"
 
-	pbaptos "github.com/streamingfast/firehose-aptos/types/pb/aptos/reader/v1"
-	pbtimestamp "github.com/streamingfast/firehose-aptos/types/pb/aptos/util/timestamp"
 	"github.com/stretchr/testify/require"
 )
 

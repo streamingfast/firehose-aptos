@@ -10,7 +10,7 @@
 package pbaptos
 
 import (
-	timestamp "github.com/streamingfast/firehose-aptos/types/pb/aptos/util/timestamp"
+	timestamp "github.com/streamingfast/firehose-aptos/types/pb/sf/aptos/util/timestamp"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
