@@ -23,8 +23,8 @@ import (
 func init() {
 	launcher.RegisterCommonFlags = func(_ *zap.Logger, cmd *cobra.Command) error {
 		//Common stores configuration flags
-		cmd.Flags().String("common-one-blocks-store-url", OneBlockStoreURL, "[COMMON] Store URL to read/write one-block files, use by reader, merger")
-		cmd.Flags().String("common-merged-blocks-store-url", MergedBlocksStoreURL, "[COMMON] Store URL where to read/write merged blocks, used by: reader, merger, firehose.")
+		cmd.Flags().String("common-one-block-store-url", OneBlockStoreURL, "[COMMON] Store URL to read/write one-block files, use by reader-node, merger")
+		cmd.Flags().String("common-merged-blocks-store-url", MergedBlocksStoreURL, "[COMMON] Store URL where to read/write merged blocks, used by: reader-node, merger, firehose.")
 		cmd.Flags().String("common-relayer-addr", RelayerServingAddr, "[COMMON] gRPC endpoint to get real-time blocks, used by: firehose")
 
 		cmd.Flags().Bool("common-blocks-cache-enabled", false, FlagDescription(`
@@ -54,7 +54,7 @@ func init() {
 		cmd.Flags().Int64("common-chain-id", -1, FlagDescription(`
 			[COMMON] The chain ID of the network we want to sync with, this is used to ensure we read data from the right network.
 			The flag must be explicitely provided, a negative will be rejected right away with an error. The chain id must be within
-			the numerical boundary of a uint32, used by: reader, firehose
+			the numerical boundary of a uint32, used by: reader-node, firehose
 		`))
 
 		// Authentication, metering and rate limiter plugins

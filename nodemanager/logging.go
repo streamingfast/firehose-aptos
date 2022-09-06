@@ -15,8 +15,8 @@ import (
 var logLineRegex = regexp.MustCompile("^[0123][0-9]{3}-[0-9]{1,2}-[0-9]{1,2}T[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}\\.[0-9]+Z\\s*(\\[.*\\])?\\s*(ERROR|WARN|DEBUG|INFO)\\s*(.*)")
 var panicLineRegex = regexp.MustCompile("^thread '.*' panicked")
 
-func newToZapLogPlugin(debugFirehose bool, logger *zap.Logger) *logplugin.ToZapLogPlugin {
-	return logplugin.NewToZapLogPlugin(debugFirehose, logger, logplugin.ToZapLogPluginLogLevel(logLevelreader), logplugin.ToZapLogPluginTransformer(stripPrefix))
+func newToZapLogPlugin(debugFirehoseLogs bool, logger *zap.Logger) *logplugin.ToZapLogPlugin {
+	return logplugin.NewToZapLogPlugin(debugFirehoseLogs, logger, logplugin.ToZapLogPluginLogLevel(logLevelreader), logplugin.ToZapLogPluginTransformer(stripPrefix))
 }
 
 func logLevelExtractor(in string) zapcore.Level {

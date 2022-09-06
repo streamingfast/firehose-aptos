@@ -117,7 +117,7 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 		resolvedNodeConfigFile := filepath.Join(nodeDataDir, "node.yaml")
 
 		readinessMaxLatency := viper.GetDuration(flagPrefix + "readiness-max-latency")
-		debugFirehose := viper.GetBool(flagPrefix + "debug-firehose-logs")
+		debugFirehoseLogs := viper.GetBool(flagPrefix + "debug-firehose-logs")
 		logToZap := viper.GetBool(flagPrefix + "log-to-zap")
 		shutdownDelay := viper.GetDuration("common-system-shutdown-signal-delay") // we reuse this global value
 		httpAddr := viper.GetString(flagPrefix + "manager-api-addr")
@@ -155,7 +155,7 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 			nodePath,
 			nodeArguments,
 			nodeDataDir,
-			debugFirehose,
+			debugFirehoseLogs,
 			logToZap,
 			syncState.BlockNum,
 			appLogger,
@@ -196,7 +196,7 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 		}
 
 		blockStreamServer := blockstream.NewUnmanagedServer(blockstream.ServerOptionWithLogger(appLogger))
-		oneBlocksStoreURL := mustReplaceDataDir(sfDataDir, viper.GetString("common-one-blocks-store-url"))
+		oneBlocksStoreURL := mustReplaceDataDir(sfDataDir, viper.GetString("common-one-block-store-url"))
 		gprcListenAdrr := viper.GetString("reader-node-grpc-listen-addr")
 		batchStartBlockNum := viper.GetUint64("reader-node-start-block-num")
 		batchStopBlockNum := viper.GetUint64("reader-node-stop-block-num")
