@@ -3,13 +3,12 @@ package tt
 import (
 	"github.com/streamingfast/firehose-aptos/types/pb/aptos/extractor/v1"
 	pbtimestamp "github.com/streamingfast/firehose-aptos/types/pb/aptos/util/timestamp"
-	"testing"
 	"time"
 
 	"github.com/stretchr/testify/require"
 )
 
-func Transaction(t *testing.T, version uint64, components ...interface{}) *pbaptos.Transaction {
+func Transaction(t testing.T, version uint64, components ...interface{}) *pbaptos.Transaction {
 	trx := &pbaptos.Transaction{
 		Version: version,
 	}
