@@ -3,6 +3,7 @@ package tt
 import (
 	"github.com/streamingfast/firehose-aptos/types/pb/aptos/extractor/v1"
 	pbtimestamp "github.com/streamingfast/firehose-aptos/types/pb/aptos/util/timestamp"
+	"testing"
 	"time"
 
 	"github.com/stretchr/testify/require"
