@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Transaction(t testing.T, version uint64, components ...interface{}) *pbaptos.Transaction {
+func Transaction(t *testing.T, version uint64, components ...interface{}) *pbaptos.Transaction {
 	trx := &pbaptos.Transaction{
 		Version: version,
 	}
