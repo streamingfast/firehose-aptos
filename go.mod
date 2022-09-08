@@ -7,7 +7,7 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/viper v1.8.1
-	github.com/streamingfast/bstream v0.0.2-0.20220830181948-52d40f586f21
+	github.com/streamingfast/bstream v0.0.2-0.20220906193713-b462cf271df6
 	github.com/streamingfast/cli v0.0.4-0.20220113202443-f7bcefa38f7e
 	github.com/streamingfast/dauth v0.0.0-20220526210215-024098ade521
 	github.com/streamingfast/derr v0.0.0-20220526184630-695c21740145
@@ -17,7 +17,7 @@ require (
 	github.com/streamingfast/dmetrics v0.0.0-20220815204823-5e8917225dab
 	github.com/streamingfast/dstore v0.1.1-0.20220830184623-b0f0cc804743
 	github.com/streamingfast/firehose v0.1.1-0.20220830152055-a665bb4336d3
-	github.com/streamingfast/firehose-aptos/types v0.0.0-20220908143457-61eb3d7544cd
+	github.com/streamingfast/firehose-aptos/types v0.0.0-20220908151655-f7f3028c1190
 	github.com/streamingfast/logging v0.0.0-20220813175024-b4fbb0e893df
 	github.com/streamingfast/merger v0.0.3-0.20220830184754-13f44a9802b8
 	github.com/streamingfast/node-manager v0.0.2-0.20220824133130-154a66c99ab9
