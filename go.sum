@@ -644,8 +644,12 @@ github.com/streamingfast/dtracing v0.0.0-20220305214756-b5c0e8699839/go.mod h1:h
 github.com/streamingfast/firehose v0.1.1-0.20220629203325-f7498b95673d/go.mod h1:FR5VZzPMTFS7xeIiP2KyZ3DN859UcQljRbskaTmoLpg=
 github.com/streamingfast/firehose v0.1.1-0.20220830152055-a665bb4336d3 h1:QDOV2txtUJUgWrA76MupCgKhi/j0ev4lczdJNxrxo3I=
 github.com/streamingfast/firehose v0.1.1-0.20220830152055-a665bb4336d3/go.mod h1:CsLvTVGfcC+d5aKyYT0TY2GEYekfnsdHh3rWxVIF9Bo=
+github.com/streamingfast/firehose v0.1.1-0.20220906183005-cf7e794875e5 h1:VuKH3RqQsygmVUnFQfxbLfBggRoaGQx1VwY0QR5NgQk=
+github.com/streamingfast/firehose v0.1.1-0.20220906183005-cf7e794875e5/go.mod h1:3wQ+kdZlsLSRK3XuSpqxdPQH9M3C0ky+AsW0TIDO/Ng=
 github.com/streamingfast/firehose-aptos/types v0.0.0-20220908150515-a88751e66d8a h1:MLKeGmvT3PeR7G3/ArUtiuuDhJDKXnYoE4tIGnLQ5BM=
 github.com/streamingfast/firehose-aptos/types v0.0.0-20220908150515-a88751e66d8a/go.mod h1:1UcVTzcgHKF0eyhQKjPAPIneQqzMEvHT5NSSV0XfvAw=
+github.com/streamingfast/firehose-aptos/types v0.0.0-20220908152810-d01edb07bf6e h1:SpaXIZabeE2W9EaGPBPSjAsZsZSDHH6iAMoi8F0WnnU=
+github.com/streamingfast/firehose-aptos/types v0.0.0-20220908152810-d01edb07bf6e/go.mod h1:1UcVTzcgHKF0eyhQKjPAPIneQqzMEvHT5NSSV0XfvAw=
 github.com/streamingfast/jsonpb v0.0.0-20210811021341-3670f0aa02d0 h1:g8eEYbFSykyzIyuxNMmHEUGGUvJE0ivmqZagLDK42gw=
 github.com/streamingfast/jsonpb v0.0.0-20210811021341-3670f0aa02d0/go.mod h1:cTNObq2Uofb330y05JbbZZ6RwE6QUXw5iVcHk1Fx3fk=
 github.com/streamingfast/logging v0.0.0-20210811175431-f3b44b61606a/go.mod h1:4GdqELhZOXj4xwc4IaBmzofzdErGynnaSzuzxy0ZIBo=
@@ -669,6 +673,8 @@ github.com/streamingfast/pbgo v0.0.6-0.20220630154121-2e8bba36234e h1:4fz1VvID5Z
 github.com/streamingfast/pbgo v0.0.6-0.20220630154121-2e8bba36234e/go.mod h1:huKwfgTGFIFZMKSVbD5TywClM7zAeBUG/zePZMqvXQQ=
 github.com/streamingfast/relayer v0.0.2-0.20220824164710-925985f7bbd4 h1:te4kqMdbymKAoVb0/qNGalB1slESXBxCr5MJFPnAJ7g=
 github.com/streamingfast/relayer v0.0.2-0.20220824164710-925985f7bbd4/go.mod h1:0cDXJdtPkm2fuMmbj5bdUz59dexgJZKKKxooO4EgF5o=
+github.com/streamingfast/relayer v0.0.2-0.20220907145011-1c0b5ce2e8ab h1:SleGe6d+/0L7S7MOV1sAgssh+afWtkXBkEmN509O2L0=
+github.com/streamingfast/relayer v0.0.2-0.20220907145011-1c0b5ce2e8ab/go.mod h1:XM5a8o2BxXoa08q7tgR0LDi3ACKbboMViD3chqLDFYs=
 github.com/streamingfast/sf-tools v0.0.0-20220727183125-3348eaca0e25 h1:HMJclIRfmcsBS4OrJrp90oLfpYmpShhv2sX/W0RJ4S0=
 github.com/streamingfast/sf-tools v0.0.0-20220727183125-3348eaca0e25/go.mod h1:r4Dr+ADs657aiK4HGyfQBBW2cWPCcEd8hK0jMtxJPps=
 github.com/streamingfast/sf-tracing v0.0.0-20220829120927-5a5d2e0fe525 h1:U93LqP9yxd5sWKhFDkZeaVVAmP1SKRDhDg5NM591zzE=

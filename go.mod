@@ -16,13 +16,13 @@ require (
 	github.com/streamingfast/dmetering v0.0.0-20220307162406-37261b4b3de9
 	github.com/streamingfast/dmetrics v0.0.0-20220815204823-5e8917225dab
 	github.com/streamingfast/dstore v0.1.1-0.20220830184623-b0f0cc804743
-	github.com/streamingfast/firehose v0.1.1-0.20220830152055-a665bb4336d3
-	github.com/streamingfast/firehose-aptos/types v0.0.0-20220908151655-f7f3028c1190
+	github.com/streamingfast/firehose v0.1.1-0.20220906183005-cf7e794875e5
+	github.com/streamingfast/firehose-aptos/types v0.0.0-20220908152810-d01edb07bf6e
 	github.com/streamingfast/logging v0.0.0-20220813175024-b4fbb0e893df
 	github.com/streamingfast/merger v0.0.3-0.20220830184754-13f44a9802b8
 	github.com/streamingfast/node-manager v0.0.2-0.20220824133130-154a66c99ab9
 	github.com/streamingfast/pbgo v0.0.6-0.20220630154121-2e8bba36234e
-	github.com/streamingfast/relayer v0.0.2-0.20220824164710-925985f7bbd4
+	github.com/streamingfast/relayer v0.0.2-0.20220907145011-1c0b5ce2e8ab
 	github.com/streamingfast/sf-tools v0.0.0-20220727183125-3348eaca0e25
 	github.com/streamingfast/substreams v0.0.21-0.20220830155636-c4e83eacd697
 	github.com/stretchr/testify v1.8.0
