@@ -28,7 +28,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/streamingfast/firehose-aptos/types"
-	pbaptos "github.com/streamingfast/firehose-aptos/types/pb/sf/aptos/reader/v1"
+	pbaptos "github.com/streamingfast/firehose-aptos/types/pb/aptos/extractor/v1"
 	tt "github.com/streamingfast/firehose-aptos/types/testing"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

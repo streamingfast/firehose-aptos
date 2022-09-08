@@ -2,7 +2,7 @@ package types
 
 import (
 	"fmt"
-	"github.com/streamingfast/firehose-aptos/types/pb/sf/aptos/reader/v1"
+	"github.com/streamingfast/firehose-aptos/types/pb/aptos/extractor/v1"
 
 	"github.com/streamingfast/bstream"
 	pbbstream "github.com/streamingfast/pbgo/sf/bstream/v1"

@@ -24,7 +24,7 @@ const (
 	// Those should be the port the native node is using for P2P and RPC respectively
 	// and importantly, they should be different than the `node` ones below. Each chain
 	// usually have at least P2P and RPC ports. We suggest to use the standard port on the
-	// `node` values below and increment the `extractor` ones by 1.
+	// `node` values below and increment the `reader` ones by 1.
 	ReaderNodeP2PPort string = "6181"
 	ReaderNodeRPCPort string = "8081"
 

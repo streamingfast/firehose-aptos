@@ -203,7 +203,7 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 		oneBlockFileSuffix := viper.GetString("reader-node-one-block-suffix")
 		blocksChanCapacity := viper.GetInt("reader-node-blocks-chan-capacity")
 
-		mindreaderPlugin, err := getMindreaderLogPlugin(
+		readerPlugin, err := getReaderLogPlugin(
 			blockStreamServer,
 			oneBlocksStoreURL,
 			readerWorkindDir,
@@ -220,17 +220,17 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 			appTracer,
 		)
 		if err != nil {
-			return nil, fmt.Errorf("new mindreader plugin: %w", err)
+			return nil, fmt.Errorf("new reader plugin: %w", err)
 		}
 
-		superviser.RegisterLogPlugin(mindreaderPlugin)
+		superviser.RegisterLogPlugin(readerPlugin)
 
 		return nodeManagerApp.New(&nodeManagerApp.Config{
 			HTTPAddr: httpAddr,
 			GRPCAddr: gprcListenAdrr,
 		}, &nodeManagerApp.Modules{
 			Operator:                   chainOperator,
-			MindreaderPlugin:           mindreaderPlugin,
+			MindreaderPlugin:           readerPlugin,
 			MetricsAndReadinessManager: metricsAndReadinessManager,
 			RegisterGRPCService: func(server *grpc.Server) error {
 				pbheadinfo.RegisterHeadInfoServer(server, blockStreamServer)

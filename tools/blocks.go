@@ -25,7 +25,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/streamingfast/bstream"
 	"github.com/streamingfast/dstore"
-	pbaptos "github.com/streamingfast/firehose-aptos/types/pb/sf/aptos/reader/v1"
+	pbaptos "github.com/streamingfast/firehose-aptos/types/pb/aptos/extractor/v1"
 	"go.uber.org/zap"
 )
 

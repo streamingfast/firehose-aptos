@@ -5,7 +5,6 @@ go 1.18
 require (
 	github.com/ShinyTrinkets/overseer v0.3.0
 	github.com/golang/protobuf v1.5.2
-	github.com/mitchellh/go-testing-interface v1.14.1
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/viper v1.8.1
 	github.com/streamingfast/bstream v0.0.2-0.20220830181948-52d40f586f21
@@ -89,6 +88,7 @@ require (
 	github.com/mattn/go-ieproxy v0.0.1 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
+	github.com/mitchellh/go-testing-interface v1.14.1 // indirect
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/mostynb/go-grpc-compression v1.1.17 // indirect
 	github.com/mschoch/smat v0.2.0 // indirect
@@ -111,7 +111,6 @@ require (
 	github.com/streamingfast/atm v0.0.0-20220131151839-18c87005e680 // indirect
 	github.com/streamingfast/dbin v0.0.0-20210809205249-73d5eca35dc5 // indirect
 	github.com/streamingfast/dtracing v0.0.0-20220305214756-b5c0e8699839 // indirect
-	github.com/streamingfast/firehose-aptos/types v0.0.0-20220902200735-fbc7dcf5207f // indirect
 	github.com/streamingfast/jsonpb v0.0.0-20210811021341-3670f0aa02d0 // indirect
 	github.com/streamingfast/opaque v0.0.0-20210811180740-0c01d37ea308 // indirect
 	github.com/streamingfast/sf-tracing v0.0.0-20220829120927-5a5d2e0fe525 // indirect

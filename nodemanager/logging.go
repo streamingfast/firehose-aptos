@@ -16,10 +16,10 @@ var logLineRegex = regexp.MustCompile("^[0123][0-9]{3}-[0-9]{1,2}-[0-9]{1,2}T[0-
 var panicLineRegex = regexp.MustCompile("^thread '.*' panicked")
 
 func newToZapLogPlugin(debugFirehoseLogs bool, logger *zap.Logger) *logplugin.ToZapLogPlugin {
-	return logplugin.NewToZapLogPlugin(debugFirehoseLogs, logger, logplugin.ToZapLogPluginLogLevel(logLevelreader), logplugin.ToZapLogPluginTransformer(stripPrefix))
+	return logplugin.NewToZapLogPlugin(debugFirehoseLogs, logger, logplugin.ToZapLogPluginLogLevel(logLevelReader), logplugin.ToZapLogPluginTransformer(stripPrefix))
 }
 
-func logLevelExtractor(in string) zapcore.Level {
+func logLevelReader(in string) zapcore.Level {
 	// If the regex does not match the line, log to `INFO` so at least we see something by default.
 	groups := logLineRegex.FindStringSubmatch(in)
 	if len(groups) <= 3 {

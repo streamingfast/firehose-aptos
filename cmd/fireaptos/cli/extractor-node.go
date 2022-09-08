@@ -51,7 +51,7 @@ func registerReaderNodeFlags(cmd *cobra.Command) error {
 	return nil
 }
 
-func getMindreaderLogPlugin(
+func getReaderLogPlugin(
 	blockStreamServer *blockstream.Server,
 	oneBlocksStoreURL string,
 	workingDir string,
@@ -102,7 +102,7 @@ func getMindreaderLogPlugin(
 		appTracer,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("new mindreader plugin: %w", err)
+		return nil, fmt.Errorf("new reader plugin: %w", err)
 	}
 
 	plugin.OnBlockWritten(func(block *bstream.Block) error {

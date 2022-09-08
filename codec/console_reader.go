@@ -13,7 +13,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/streamingfast/bstream"
 	"github.com/streamingfast/firehose-aptos/types"
-	pbaptos "github.com/streamingfast/firehose-aptos/types/pb/sf/aptos/reader/v1"
+	pbaptos "github.com/streamingfast/firehose-aptos/types/pb/aptos/extractor/v1"
 	"go.uber.org/zap"
 )
 
