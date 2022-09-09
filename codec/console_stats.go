@@ -21,9 +21,9 @@ type consoleReaderStats struct {
 func newConsoleReaderStats() *consoleReaderStats {
 	return &consoleReaderStats{
 		lastBlock:             bstream.BlockRefEmpty,
-		blockRate:             dmetrics.NewPerMinuteLocalRateCounter("blocks"),
+		blockRate:             dmetrics.NewPerSecondLocalRateCounter("blocks"),
 		blockAverageParseTime: dmetrics.NewAvgPerSecondLocalRateCounter("ms/block"),
-		transactionRate:       dmetrics.NewPerMinuteLocalRateCounter("trxs"),
+		transactionRate:       dmetrics.NewPerSecondLocalRateCounter("trxs"),
 	}
 }
 

@@ -61,7 +61,6 @@ func blocksStdin(_ string) {
 			line := scanner.Text()
 			if strings.HasPrefix(line, "FIRE ") {
 				lines <- line
-
 				firelogBytesCounter.IncBy(int64(len(line)))
 			}
 
@@ -102,12 +101,15 @@ func blocksStdin(_ string) {
 
 	}()
 
+	printStats := func() {
+		fmt.Printf("#%s - Blocks %s, Bytes (Firehose lines) %s, Bytes (All lines) %s\n", currentHeadBlock, blockRateCounter, firelogBytesCounter, stdOutBytesCounter)
+	}
+
 	go func() {
 		ticker := time.NewTicker(1 * time.Second)
 		for {
 			<-ticker.C
-
-			fmt.Printf("#%s - Blocks %s, Bytes %s\n", currentHeadBlock, blockRateCounter, stdOutBytesCounter)
+			printStats()
 		}
 	}()
 
@@ -116,7 +118,7 @@ func blocksStdin(_ string) {
 	case <-lifecycle.Terminated():
 	}
 
-	fmt.Printf("#%s - Blocks %s, Bytes %s\n", currentHeadBlock, blockRateCounter, stdOutBytesCounter)
+	printStats()
 	fmt.Println("Completed")
 }
 
@@ -125,6 +127,7 @@ func rawStdin(_ string) {
 	scanner.Buffer(make([]byte, 100*1024*1024), 100*1024*1024)
 
 	stdOutBytesCounter := dmetrics.NewLocalRateCounter(time.Second, "bytes")
+	firelogBytesCounter := dmetrics.NewLocalRateCounter(time.Second, "bytes")
 	blockRateCounter := dmetrics.NewLocalRateCounter(time.Second, "block")
 
 	currentHeadBlock := ""
@@ -134,9 +137,13 @@ func rawStdin(_ string) {
 	go func() {
 		for scanner.Scan() {
 			line := scanner.Text()
-			if strings.HasPrefix(line, "FIRE BLOCK_END") {
-				blockRateCounter.Inc()
-				currentHeadBlock = decimalRegex.FindString(line)
+			if strings.HasPrefix(line, "FIRE ") {
+				if strings.HasPrefix(line, "FIRE BLOCK_END") {
+					blockRateCounter.Inc()
+					currentHeadBlock = decimalRegex.FindString(line)
+				}
+
+				firelogBytesCounter.IncBy(int64(len(line)))
 			}
 
 			stdOutBytesCounter.IncBy(int64(len(line)))
@@ -149,12 +156,15 @@ func rawStdin(_ string) {
 		lifecycle.Shutdown(nil)
 	}()
 
+	printStats := func() {
+		fmt.Printf("#%s - Blocks %s, Bytes (Firehose lines) %s, Bytes (All lines) %s\n", currentHeadBlock, blockRateCounter, firelogBytesCounter, stdOutBytesCounter)
+	}
+
 	go func() {
 		ticker := time.NewTicker(1 * time.Second)
 		for {
 			<-ticker.C
-
-			fmt.Printf("#%s - Blocks %s, Bytes %s\n", currentHeadBlock, blockRateCounter, stdOutBytesCounter)
+			printStats()
 		}
 	}()
 
@@ -163,6 +173,6 @@ func rawStdin(_ string) {
 	case <-lifecycle.Terminated():
 	}
 
-	fmt.Printf("#%s - Blocks %s, Bytes %s\n", currentHeadBlock, blockRateCounter, stdOutBytesCounter)
+	printStats()
 	fmt.Println("Completed")
 }
