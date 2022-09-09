@@ -249,18 +249,18 @@ func (r *ConsoleReader) readTransaction(params []string) error {
 		return fmt.Errorf("invalid log line length: %w", err)
 	}
 
+	if r.activeBlock == nil {
+		return fmt.Errorf("no active block in progress when reading TRX")
+	}
+
 	out, err := base64.StdEncoding.DecodeString(params[0])
 	if err != nil {
-		return fmt.Errorf("read trx: invalid base64 value: %w", err)
+		return fmt.Errorf("read trx in block %d: invalid base64 value: %w", r.activeBlock.Height, err)
 	}
 
 	transaction := &pbaptos.Transaction{}
 	if err := proto.Unmarshal(out, transaction); err != nil {
-		return fmt.Errorf("read trx: invalid proto: %w", err)
-	}
-
-	if r.activeBlock == nil {
-		return fmt.Errorf("no active block in progress when reading TRX of type %q", transaction.Type)
+		return fmt.Errorf("read trx in block %d: invalid proto: %w", r.activeBlock.Height, err)
 	}
 
 	if len(r.activeBlock.Transactions) == 0 {
