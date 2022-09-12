@@ -1,10 +1,11 @@
 package tt
 
 import (
+	"time"
+
 	"github.com/mitchellh/go-testing-interface"
 	"github.com/streamingfast/firehose-aptos/types/pb/aptos/extractor/v1"
 	pbtimestamp "github.com/streamingfast/firehose-aptos/types/pb/aptos/util/timestamp"
-	"time"
 
 	"github.com/stretchr/testify/require"
 )

@@ -42,7 +42,7 @@ func registerCommonNodeFlags(cmd *cobra.Command, flagPrefix string, managerAPIAd
 	cmd.Flags().String(flagPrefix+"waypoint-file", "", "Path where to find the node's waypoint.txt file for the network, if defined, going to be copied inside node data directory automatically and '{waypoint-file}' will be replaced in config automatically to this value.")
 	cmd.Flags().String(flagPrefix+"validator-identity-file", "", "Path where to find the node's validator-identity.yaml file for the network, if defined, going to be copied inside node data directory automatically and '{validator-identity-file}' will be replaced in config automatically to this value.")
 	cmd.Flags().String(flagPrefix+"vfn-identity-file", "", "Path where to find the node's vfn-identity.yaml file for the network, if defined, going to be copied inside node data directory automatically and '{vfn-identity-file}' will be replaced in config automatically to this value.")
-	cmd.Flags().Bool(flagPrefix+"debug-firehose-logs", false, "[DEV] Prints firehose instrumentation logs to standard output, should be use for debugging purposes only")
+	cmd.Flags().Bool(flagPrefix+"debug-firehose-logs", false, "[DEV] Prints Firehose instrumentation logs to standard output, should be use for debugging purposes only")
 	cmd.Flags().Bool(flagPrefix+"log-to-zap", true, FlagDescription(`
 		When sets to 'true', all standard error output emitted by the invoked process defined via '%s'
 		is intercepted, split line by line and each line is then transformed and logged through the Firehose stack
