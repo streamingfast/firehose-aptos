@@ -2,11 +2,7 @@
 
 This document contains instructions and results about some experiments recently done around `aptos-node` and `firehose-aptos` syncing together.
 
-### `aptos-node` outputs to `stdout` piped into and read by a "raw" Go
-
-In this setup, we want to see what is the throughput of `aptos-node` while it stream everything to a Go program. This Go program reads the input, scan each line of it (splitting by `\n` character) and discard it mostly right away.  Only processing is to extract the current block number from the `FIRE BLOCK_END <BLOCK_NUM>` line and increase some counters. Each 1s a print of the counters is printed.
-
-This is the maximum throughput we can hope to get in the current state, it does not involve any decoding nor storage of anything.
+### Setup
 
 Configuration of `aptos-node`:
 - Commit [08e7ae493efe0ef5ce5bfa467668db4cbc934c39](https://github.com/aptos-labs/aptos-core/commit/08e7ae493efe0ef5ce5bfa467668db4cbc934c39)
@@ -15,6 +11,14 @@ Configuration of `aptos-node`:
 
 Configuration of `firehose-aptos`:
 - Commit [0745db35507bb321ae36adf015862d37dda2f989](https://github.com/streamingfast/firehose-aptos/commit/0745db35507bb321ae36adf015862d37dda2f989)
+
+We used some bash foo and `stats` command () to extract the statistics.
+
+### `aptos-node` outputs to `stdout` piped into and read by a "raw" Go
+
+In this setup, we want to see what is the throughput of `aptos-node` while it stream everything to a Go program. This Go program reads the input, scan each line of it (splitting by `\n` character) and discard it mostly right away. Only processing is to extract the current block number from the `FIRE BLOCK_END <BLOCK_NUM>` line and increase some counters. Each 1s a print of the counters is printed.
+
+This is the maximum throughput we can hope to get in the current state, it does not involve any decoding nor storage of anything.
 
 Invocation:
 
@@ -27,13 +31,7 @@ We let it run until it reaches approximately block #150,000 at which point we do
 Quick statistics about the run:
 
 ```
-$ cat codec/bench/results_raw_stdin.log| cut -d ' ' -f 4 | stats
-Count: 170
-Range: Min 267 - Max 2343
-Sum: 150280
-Average: 884
-Median: 872
-Standard Deviation: 238.16
+Average: 884 blocks/s
 ```
 
 > Graphs presented later
@@ -47,13 +45,7 @@ RUST_LOG=error STARTING_BLOCK=0 aptos-node --config /Users/maoueh/work/sf/fireho
 ```
 
 ```
-$ cat codec/bench/results_blocks_stdin.log|cut -d ' ' -f 4 | stats
-Count: 176
-Range: Min 261 - Max 2366
-Sum: 149536
-Average: 849
-Median: 839
-Standard Deviation: 232.65
+Average: 849 blocks/s
 ```
 
 There is no differences when introducing `Console Reader` so the bottleneck here is in `aptos-node` part.
@@ -72,12 +64,7 @@ RUST_LOG=error STARTING_BLOCK=0 aptos-node --config /Users/maoueh/work/sf/fireho
 
 ```
 $ cat codec/bench/results_raw_stdin_tiny_output_no_base64.log|cut -d ' ' -f 4 | stats
-Count: 167
-Range: Min 291 - Max 2401
-Sum: 147570
-Average: 883
-Median: 878
-Standard Deviation: 238.52
+Average: 883 blocks/s
 ```
 
 ### `aptos-node` outputs only `FIRE BLOCK_END` (no proto encoding, no base64) to `stdout` piped into and read by a "raw" Go
@@ -92,12 +79,7 @@ RUST_LOG=error STARTING_BLOCK=0 aptos-node --config /Users/maoueh/work/sf/fireho
 
 ```
 $ cat codec/bench/results_raw_stdin_tiny_output_no_proto_encoding.log| cut -d ' ' -f 4 | stats
-Count: 167
-Range: Min 263 - Max 1775
-Sum: 142978
-Average: 856
-Median: 842
-Standard Deviation: 216.38
+Average: 856 blocks/s
 ```
 
 ### Theoretical "console reader" Go throughput
@@ -124,12 +106,7 @@ And here the stats:
 
 ```
 $ cat codec/bench/results_blocks_stdin_from_premade_file.log | cut -d ' ' -f 4 | stats
-Count: 378
-Range: Min 2149 - Max 39636
-Sum: 6232643
-Average: 16488
-Median: 16574
-Standard Deviation: 4205.23
+Average: 16488 blocks/s
 ```
 
 ### Full System Throughput
