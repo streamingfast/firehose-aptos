@@ -3,7 +3,7 @@ base:
   data_dir: {data-dir}
   role: validator
   waypoint:
-    from_config: "0:f7f746b64ed9c77be826a076913a2f298b51b7923083f2c67e965d3d791e7f98"
+    from_config: "0:87856349c5948b7543684eed16581694294fc452d40b5552f6423e191edb28d7"
 consensus:
   max_block_txns: 6000
   max_block_bytes: 5242880
@@ -36,7 +36,7 @@ consensus:
       from_file:
         identity_blob_path: {validator-identity-file}
         waypoint:
-          from_config: "0:f7f746b64ed9c77be826a076913a2f298b51b7923083f2c67e965d3d791e7f98"
+          from_config: "0:87856349c5948b7543684eed16581694294fc452d40b5552f6423e191edb28d7"
   sync_only: false
   channel_size: 30
   use_quorum_store: false
@@ -70,7 +70,7 @@ full_node_networks:
     ping_timeout_ms: 20000
     ping_failures_tolerated: 3
     max_outbound_connections: 0
-    max_inbound_connections: 100
+    max_inbound_connections: 30
     inbound_rate_limit_config: ~
     outbound_rate_limit_config: ~
     max_message_size: 67108864
@@ -84,7 +84,7 @@ full_node_networks:
     identity:
       type: from_file
       path: {vfn-identity-file}
-    listen_address: /ip4/0.0.0.0/tcp/63749
+    listen_address: /ip4/0.0.0.0/tcp/64722
     mutual_authentication: false
     network_id:
       private: vfn
@@ -97,7 +97,7 @@ full_node_networks:
     ping_timeout_ms: 20000
     ping_failures_tolerated: 3
     max_outbound_connections: 0
-    max_inbound_connections: 100
+    max_inbound_connections: 30
     inbound_rate_limit_config: ~
     outbound_rate_limit_config: ~
     max_message_size: 67108864
@@ -173,7 +173,7 @@ state_sync:
   storage_service:
     max_concurrent_requests: 4000
     max_epoch_chunk_size: 100
-    max_lru_cache_size: 100
+    max_lru_cache_size: 500
     max_network_channel_size: 4000
     max_network_chunk_bytes: 64880640
     max_state_chunk_size: 2000
@@ -184,7 +184,6 @@ state_sync:
 firehose_stream:
   enabled: true
 storage:
-  address: "127.0.0.1:6666"
   backup_service_address: "127.0.0.1:6186"
   dir: db
   storage_pruner_config:
@@ -250,7 +249,7 @@ validator_network:
   ping_timeout_ms: 20000
   ping_failures_tolerated: 3
   max_outbound_connections: 4
-  max_inbound_connections: 100
+  max_inbound_connections: 30
   inbound_rate_limit_config: ~
   outbound_rate_limit_config: ~
   max_message_size: 67108864
