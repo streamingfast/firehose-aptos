@@ -313,7 +313,7 @@ func (r *ConsoleReader) readBlockEnd(params []string) (*pbaptos.Block, error) {
 	r.stats.blockAverageParseTime.IncByElapsedTime(r.activeBlockStartTime, time.Millisecond)
 	r.stats.lastBlock = r.activeBlock.AsRef()
 
-	r.logger.Debug("console reader read block",
+	r.logger.Debug("console reader node block",
 		zap.String("id", r.activeBlock.ID()),
 		zap.Uint64("height", r.activeBlock.Height),
 		zap.Time("timestamp", r.activeBlock.Timestamp.AsTime()),
