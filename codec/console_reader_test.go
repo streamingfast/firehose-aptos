@@ -225,7 +225,7 @@ func TestParseFromFile(t *testing.T) {
 
 				fireTrx(tt.Transaction(t, 2, tt.TrxTypeGenesis, tt.Timestamp(t, "2020-01-02T15:04:05Z"))),
 			},
-			EqualErrorAssertion(`no active block in progress when reading TRX of type "GENESIS" (on line "FIRE TRX CgYI5Yy48AUQAg==")`),
+			EqualErrorAssertion(`no active block in progress when reading TRX (on line "FIRE TRX CgYI5Yy48AUQAg==")`),
 		},
 	}
 
