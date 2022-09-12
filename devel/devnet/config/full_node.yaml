@@ -23,6 +23,13 @@ full_node_networks:
       seeds:
         {}
 
+firehose_stream:
+  enabled: true
+  starting_version: 0
+
+storage:
+  enable_indexer: true
+
 api:
     enabled: true
     address: 127.0.0.1:8080

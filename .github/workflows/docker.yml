@@ -7,6 +7,7 @@ on:
       - "v*"
     branches:
       - "*"
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
