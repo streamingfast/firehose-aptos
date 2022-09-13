@@ -3,7 +3,7 @@
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 clean=
-sfnear="$ROOT/../fireaptos"
+fireaptos="$ROOT/../fireaptos"
 
 main() {
   pushd "$ROOT" &> /dev/null
@@ -28,7 +28,7 @@ main() {
   # should be removed once properly handled in firehose-aptos core code directly.
   mkdir -p firehose-data/reader/data
 
-  exec $sfnear -c $(basename $ROOT).yaml start "$@"
+  exec $fireaptos -c $(basename $ROOT).yaml start "$@"
 }
 
 usage_error() {

@@ -20,11 +20,15 @@ main() {
 
   set -e
 
+  if [[ ! -f "$1" ]]; then
+    usage_error "Argument <file> must be provided and must exist to be piped in"
+  fi
+
   if [[ $clean == "true" ]]; then
     rm -rf firehose-data &> /dev/null || true
   fi
 
-  exec $fireaptos -c $(basename $ROOT).yaml start "$@"
+  exec cat "$file" | $fireaptos -c $(basename $ROOT).yaml start "$@"
 }
 
 usage_error() {
@@ -38,9 +42,9 @@ usage_error() {
 }
 
 usage() {
-  echo "usage: start.sh [-c]"
+  echo "usage: start.sh [-c] <file>"
   echo ""
-  echo "Start $(basename $ROOT) environment."
+  echo "Start $(basename $ROOT) environment which goals is to sync with Aptos Devnet"
   echo ""
   echo "Options"
   echo "    -c             Clean actual data directory first"
