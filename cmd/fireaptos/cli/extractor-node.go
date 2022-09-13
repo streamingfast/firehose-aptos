@@ -32,26 +32,26 @@ import (
 )
 
 func init() {
-	registerNode("extractor", registerExtractorNodeFlags, ExtractorNodeManagerAPIAddr)
+	registerNode("reader", registerReaderNodeFlags, ReaderNodeManagerAPIAddr)
 }
 
-func registerExtractorNodeFlags(cmd *cobra.Command) error {
-	cmd.Flags().String("extractor-node-grpc-listen-addr", ExtractorNodeGRPCAddr, "The gRPC listening address to use for serving real-time blocks")
-	cmd.Flags().Bool("extractor-node-discard-after-stop-num", false, "Ignore remaining blocks being processed after stop num (only useful if we discard the extractor data after reprocessing a chunk of blocks)")
-	cmd.Flags().String("extractor-node-working-dir", "{data-dir}/extractor/work", "Path where extractor will stores its files")
-	cmd.Flags().Uint("extractor-node-start-block-num", 0, "Blocks that were produced with smaller block number then the given block num are skipped")
-	cmd.Flags().Uint("extractor-node-stop-block-num", 0, "Shutdown extractor when we the following 'stop-block-num' has been reached, inclusively.")
-	cmd.Flags().Int("extractor-node-blocks-chan-capacity", 100, "Capacity of the channel holding blocks read by the extractor. Process will shutdown superviser/geth if the channel gets over 90% of that capacity to prevent horrible consequences. Raise this number when processing tiny blocks very quickly")
-	cmd.Flags().String("extractor-node-one-block-suffix", "default", FlagDescription(`
-		Unique identifier for extractor, so that it can produce 'oneblock files' in the same store as another instance without competing
-		for writes. You should set this flag if you have multiple extractor running, each one should get a unique identifier, the
+func registerReaderNodeFlags(cmd *cobra.Command) error {
+	cmd.Flags().String("reader-node-grpc-listen-addr", ReaderNodeGRPCAddr, "The gRPC listening address to use for serving real-time blocks")
+	cmd.Flags().Bool("reader-node-discard-after-stop-num", false, "Ignore remaining blocks being processed after stop num (only useful if we discard the reader data after reprocessing a chunk of blocks)")
+	cmd.Flags().String("reader-node-working-dir", "{data-dir}/reader/work", "Path where reader will stores its files")
+	cmd.Flags().Uint("reader-node-start-block-num", 0, "Blocks that were produced with smaller block number then the given block num are skipped")
+	cmd.Flags().Uint("reader-node-stop-block-num", 0, "Shutdown reader node when we the following 'stop-block-num' has been reached, inclusively.")
+	cmd.Flags().Int("reader-node-blocks-chan-capacity", 100, "Capacity of the channel holding blocks read by the reader. Process will shutdown superviser/geth if the channel gets over 90% of that capacity to prevent horrible consequences. Raise this number when processing tiny blocks very quickly")
+	cmd.Flags().String("reader-node-one-block-suffix", "default", FlagDescription(`
+		Unique identifier for reader node, so that it can produce 'oneblock files' in the same store as another instance without competing
+		for writes. You should set this flag if you have multiple reader nodes running, each one should get a unique identifier, the
 		hostname value is a good value to use.
 	`))
 
 	return nil
 }
 
-func getMindreaderLogPlugin(
+func getReaderLogPlugin(
 	blockStreamServer *blockstream.Server,
 	oneBlocksStoreURL string,
 	workingDir string,
@@ -102,7 +102,7 @@ func getMindreaderLogPlugin(
 		appTracer,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("new mindreader plugin: %w", err)
+		return nil, fmt.Errorf("new reader plugin: %w", err)
 	}
 
 	plugin.OnBlockWritten(func(block *bstream.Block) error {
@@ -110,7 +110,7 @@ func getMindreaderLogPlugin(
 			return fmt.Errorf("reset sync state file to offset 0: %w", err)
 		}
 
-		err := json.NewEncoder(syncStateFileWriter).Encode(extractorNodeSyncState{
+		err := json.NewEncoder(syncStateFileWriter).Encode(readerNodeSyncState{
 			BlockNum: block.Num(),
 		})
 		if err != nil {
@@ -129,14 +129,14 @@ func getMindreaderLogPlugin(
 	return plugin, nil
 }
 
-type extractorNodeSyncState struct {
+type readerNodeSyncState struct {
 	BlockNum uint64 `json:"last_seen_block_num"`
 
 	// Deprecated: There for backward compatibility reading
 	Version uint64 `json:"last_seen_version,omitempty"`
 }
 
-func readNodeSyncState(logger *zap.Logger, path string) (state *extractorNodeSyncState, err error) {
+func readNodeSyncState(logger *zap.Logger, path string) (state *readerNodeSyncState, err error) {
 	content, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("open file: %w", err)
@@ -144,7 +144,7 @@ func readNodeSyncState(logger *zap.Logger, path string) (state *extractorNodeSyn
 
 	if len(content) == 0 {
 		logger.Warn("reader node sync state file content is empty, this is unexpected, resetting sync state to block num 0", zap.String("path", path))
-		return &extractorNodeSyncState{BlockNum: 0}, nil
+		return &readerNodeSyncState{BlockNum: 0}, nil
 	}
 
 	if err := json.Unmarshal(content, &state); err != nil {
@@ -162,7 +162,7 @@ func readNodeSyncState(logger *zap.Logger, path string) (state *extractorNodeSyn
 	return state, nil
 }
 
-func writeNodeSyncState(logger *zap.Logger, state *extractorNodeSyncState, path string) (err error) {
+func writeNodeSyncState(logger *zap.Logger, state *readerNodeSyncState, path string) (err error) {
 	data, err := json.Marshal(state)
 	if err != nil {
 		return fmt.Errorf("marshal json: %w", err)

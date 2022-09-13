@@ -124,7 +124,7 @@ func (r *ConsoleReader) next() (out *pbaptos.Block, err error) {
 
 		default:
 			if r.logger.Core().Enabled(zap.DebugLevel) {
-				r.logger.Debug("skipping unknown deep mind log line", zap.String("line", line))
+				r.logger.Debug("skipping unknown firehose log line", zap.String("line", line))
 			}
 
 			continue
@@ -313,7 +313,7 @@ func (r *ConsoleReader) readBlockEnd(params []string) (*pbaptos.Block, error) {
 	r.stats.blockAverageParseTime.IncByElapsedTime(r.activeBlockStartTime, time.Millisecond)
 	r.stats.lastBlock = r.activeBlock.AsRef()
 
-	r.logger.Debug("console reader read block",
+	r.logger.Debug("console reader node block",
 		zap.String("id", r.activeBlock.ID()),
 		zap.Uint64("height", r.activeBlock.Height),
 		zap.Time("timestamp", r.activeBlock.Timestamp.AsTime()),

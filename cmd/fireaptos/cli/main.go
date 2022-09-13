@@ -35,7 +35,7 @@ func Main() {
 	RootCmd.PersistentFlags().StringP("config-file", "c", "./firehose.yaml", "Configuration file to use. No config file loaded if set to an empty string.")
 
 	RootCmd.PersistentFlags().String("log-format", "text", "Format for logging to stdout. Either 'text' or 'stackdriver'")
-	RootCmd.PersistentFlags().Bool("log-to-file", true, "Also write logs to {data-dir}/firehose.log.json ")
+	RootCmd.PersistentFlags().Bool("log-to-file", false, "Also write logs to {data-dir}/firehose.log.json ")
 	RootCmd.PersistentFlags().String("log-level-switcher-listen-addr", "localhost:1065", FlagDescription(`
 		If non-empty, a JSON based HTTP server will listen on this address to let you switch the default logging level
 		of all registered loggers to a different one on the fly. This enables switching to debug level on
@@ -83,7 +83,7 @@ func Main() {
 	derr.Check("aptos-blockchain", RootCmd.Execute())
 }
 
-var startCmdExample = `fireaptos start extractor`
+var startCmdExample = `fireaptos start reader-node`
 var startCmdHelpTemplate = `Usage:{{if .Runnable}}
   {{.UseLine}}{{end}} [all|command1 [command2...]]{{if gt (len .Aliases) 0}}
 

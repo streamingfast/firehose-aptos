@@ -33,7 +33,7 @@ func NewSuperviser(
 	binary string,
 	arguments []string,
 	dataDir string,
-	debugDeepMind bool,
+	debugFirehoseLogs bool,
 	logToZap bool,
 	lastSeenBlockNum uint64,
 	appLogger *zap.Logger,
@@ -51,9 +51,9 @@ func NewSuperviser(
 	}
 
 	if logToZap {
-		supervisor.RegisterLogPlugin(newToZapLogPlugin(debugDeepMind, nodelogger))
+		supervisor.RegisterLogPlugin(newToZapLogPlugin(debugFirehoseLogs, nodelogger))
 	} else {
-		toConsolePlugin := logplugin.NewToConsoleLogPlugin(debugDeepMind)
+		toConsolePlugin := logplugin.NewToConsoleLogPlugin(debugFirehoseLogs)
 		toConsolePlugin.SetSkipBlankLines(true)
 
 		supervisor.RegisterLogPlugin(toConsolePlugin)

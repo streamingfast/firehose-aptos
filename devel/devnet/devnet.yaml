@@ -2,13 +2,13 @@ start:
   args:
   - firehose
   - merger
-  - extractor-node
+  - reader-node
   - relayer
   flags:
-    extractor-node-config-file: "config/full_node.yaml"
-    extractor-node-log-to-zap: false
-    extractor-node-genesis-file: "config/genesis.blob"
-    extractor-node-waypoint-file: "config/waypoint.txt"
+    reader-node-config-file: "config/full_node.yaml"
+    reader-node-log-to-zap: false
+    reader-node-genesis-file: "config/genesis.blob"
+    reader-node-waypoint-file: "config/waypoint.txt"
 
     # Temporary override for easier testing when not fully synced yet, in production, should not be set
     firehose-real-time-tolerance: 999999999s

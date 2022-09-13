@@ -28,21 +28,21 @@ import (
 var nodeLogger, nodeTracer = logging.PackageLogger("node", "github.com/streamingfast/firehose-aptos/node")
 var nodeAptosChainLogger, _ = logging.PackageLogger("node.aptos", "github.com/streamingfast/firehose-aptos/node/aptos", DefaultLevelInfo)
 
-var extractorLogger, extractorTracer = logging.PackageLogger("extractor", "github.com/streamingfast/firehose-aptos/extractor")
-var extractorAptosChainLogger, _ = logging.PackageLogger("extractor.aptos", "github.com/streamingfast/firehose-aptos/extractor/aptos", DefaultLevelInfo)
+var readerLogger, readerTracer = logging.PackageLogger("reader", "github.com/streamingfast/firehose-aptos/reader")
+var readerAptosChainLogger, _ = logging.PackageLogger("reader.aptos", "github.com/streamingfast/firehose-aptos/reader/aptos", DefaultLevelInfo)
 
 func registerCommonNodeFlags(cmd *cobra.Command, flagPrefix string, managerAPIAddr string) {
 	cmd.Flags().String(flagPrefix+"path", ChainExecutableName, FlagDescription(`
 		Process that will be invoked to sync the chain, can be a full path or just the binary's name, in which case the binary is
 		searched for paths listed by the PATH environment variable (following operating system rules around PATH handling).
 	`))
-	cmd.Flags().String(flagPrefix+"data-dir", "{data-dir}/{node-role}/data", "Directory for node data ({node-role} is either extractor, peering or dev-miner)")
+	cmd.Flags().String(flagPrefix+"data-dir", "{data-dir}/{node-role}/data", "Directory for node data ({node-role} is either reader, peering or dev-miner)")
 	cmd.Flags().String(flagPrefix+"config-file", "aptos.yaml", "Path where to find the node's config file that is passed directly to the executable")
 	cmd.Flags().String(flagPrefix+"genesis-file", "", "Path where to find the node's genesis.blob file for the network, if defined, going to be copied inside node data directory automatically and '{genesis-file}' will be replaced in config automatically to this value.")
 	cmd.Flags().String(flagPrefix+"waypoint-file", "", "Path where to find the node's waypoint.txt file for the network, if defined, going to be copied inside node data directory automatically and '{waypoint-file}' will be replaced in config automatically to this value.")
 	cmd.Flags().String(flagPrefix+"validator-identity-file", "", "Path where to find the node's validator-identity.yaml file for the network, if defined, going to be copied inside node data directory automatically and '{validator-identity-file}' will be replaced in config automatically to this value.")
 	cmd.Flags().String(flagPrefix+"vfn-identity-file", "", "Path where to find the node's vfn-identity.yaml file for the network, if defined, going to be copied inside node data directory automatically and '{vfn-identity-file}' will be replaced in config automatically to this value.")
-	cmd.Flags().Bool(flagPrefix+"debug-deep-mind", false, "[DEV] Prints deep mind instrumentation logs to standard output, should be use for debugging purposes only")
+	cmd.Flags().Bool(flagPrefix+"debug-firehose-logs", false, "[DEV] Prints Firehose instrumentation logs to standard output, should be use for debugging purposes only")
 	cmd.Flags().Bool(flagPrefix+"log-to-zap", true, FlagDescription(`
 		When sets to 'true', all standard error output emitted by the invoked process defined via '%s'
 		is intercepted, split line by line and each line is then transformed and logged through the Firehose stack
@@ -56,8 +56,8 @@ func registerCommonNodeFlags(cmd *cobra.Command, flagPrefix string, managerAPIAd
 }
 
 func registerNode(kind string, extraFlagRegistration func(cmd *cobra.Command) error, managerAPIaddr string) {
-	if kind != "extractor" {
-		panic(fmt.Errorf("invalid kind value, must be either 'extractor', got %q", kind))
+	if kind != "reader" {
+		panic(fmt.Errorf("invalid kind value, must be either 'reader', got %q", kind))
 	}
 
 	app := fmt.Sprintf("%s-node", kind)
@@ -90,10 +90,10 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 			appLogger = nodeLogger
 			appTracer = nodeTracer
 			supervisedProcessLogger = nodeAptosChainLogger
-		case "extractor":
-			appLogger = extractorLogger
-			appTracer = extractorTracer
-			supervisedProcessLogger = extractorAptosChainLogger
+		case "reader":
+			appLogger = readerLogger
+			appTracer = readerTracer
+			supervisedProcessLogger = readerAptosChainLogger
 		default:
 			panic(fmt.Errorf("unknown node kind %q", kind))
 		}
@@ -117,7 +117,7 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 		resolvedNodeConfigFile := filepath.Join(nodeDataDir, "node.yaml")
 
 		readinessMaxLatency := viper.GetDuration(flagPrefix + "readiness-max-latency")
-		debugDeepMind := viper.GetBool(flagPrefix + "debug-deep-mind")
+		debugFirehoseLogs := viper.GetBool(flagPrefix + "debug-firehose-logs")
 		logToZap := viper.GetBool(flagPrefix + "log-to-zap")
 		shutdownDelay := viper.GetDuration("common-system-shutdown-signal-delay") // we reuse this global value
 		httpAddr := viper.GetString(flagPrefix + "manager-api-addr")
@@ -135,8 +135,8 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 		}
 		metricsAndReadinessManager := buildMetricsAndReadinessManager(flagPrefix, readinessMaxLatency)
 
-		extractorWorkindDir := mustReplaceDataDir(sfDataDir, viper.GetString("extractor-node-working-dir"))
-		syncStateFile := filepath.Join(extractorWorkindDir, "sync_state.json")
+		readerWorkindDir := mustReplaceDataDir(sfDataDir, viper.GetString("reader-node-working-dir"))
+		syncStateFile := filepath.Join(readerWorkindDir, "sync_state.json")
 		syncState, err := readNodeSyncState(appLogger, syncStateFile)
 		if err != nil {
 			if !errors.Is(err, fs.ErrNotExist) {
@@ -146,7 +146,7 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 			initialStartBlock := bstream.GetProtocolFirstStreamableBlock
 
 			appLogger.Info("overriding initial node sync state based to be first streamable block", zap.Uint64("starting_block", initialStartBlock))
-			syncState = &extractorNodeSyncState{BlockNum: initialStartBlock}
+			syncState = &readerNodeSyncState{BlockNum: initialStartBlock}
 		}
 
 		appLogger.Info("inital sync state used to restart node", zap.Reflect("state", syncState))
@@ -155,7 +155,7 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 			nodePath,
 			nodeArguments,
 			nodeDataDir,
-			debugDeepMind,
+			debugFirehoseLogs,
 			logToZap,
 			syncState.BlockNum,
 			appLogger,
@@ -186,7 +186,7 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 			return nil, fmt.Errorf("unable to create chain operator: %w", err)
 		}
 
-		if kind != "extractor" {
+		if kind != "reader" {
 			return nodeManagerApp.New(&nodeManagerApp.Config{
 				HTTPAddr: httpAddr,
 			}, &nodeManagerApp.Modules{
@@ -196,17 +196,17 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 		}
 
 		blockStreamServer := blockstream.NewUnmanagedServer(blockstream.ServerOptionWithLogger(appLogger))
-		oneBlocksStoreURL := mustReplaceDataDir(sfDataDir, viper.GetString("common-one-blocks-store-url"))
-		gprcListenAdrr := viper.GetString("extractor-node-grpc-listen-addr")
-		batchStartBlockNum := viper.GetUint64("extractor-node-start-block-num")
-		batchStopBlockNum := viper.GetUint64("extractor-node-stop-block-num")
-		oneBlockFileSuffix := viper.GetString("extractor-node-one-block-suffix")
-		blocksChanCapacity := viper.GetInt("extractor-node-blocks-chan-capacity")
+		oneBlocksStoreURL := mustReplaceDataDir(sfDataDir, viper.GetString("common-one-block-store-url"))
+		gprcListenAdrr := viper.GetString("reader-node-grpc-listen-addr")
+		batchStartBlockNum := viper.GetUint64("reader-node-start-block-num")
+		batchStopBlockNum := viper.GetUint64("reader-node-stop-block-num")
+		oneBlockFileSuffix := viper.GetString("reader-node-one-block-suffix")
+		blocksChanCapacity := viper.GetInt("reader-node-blocks-chan-capacity")
 
-		mindreaderPlugin, err := getMindreaderLogPlugin(
+		readerPlugin, err := getReaderLogPlugin(
 			blockStreamServer,
 			oneBlocksStoreURL,
-			extractorWorkindDir,
+			readerWorkindDir,
 			batchStartBlockNum,
 			batchStopBlockNum,
 			blocksChanCapacity,
@@ -220,17 +220,17 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 			appTracer,
 		)
 		if err != nil {
-			return nil, fmt.Errorf("new mindreader plugin: %w", err)
+			return nil, fmt.Errorf("new reader plugin: %w", err)
 		}
 
-		superviser.RegisterLogPlugin(mindreaderPlugin)
+		superviser.RegisterLogPlugin(readerPlugin)
 
 		return nodeManagerApp.New(&nodeManagerApp.Config{
 			HTTPAddr: httpAddr,
 			GRPCAddr: gprcListenAdrr,
 		}, &nodeManagerApp.Modules{
 			Operator:                   chainOperator,
-			MindreaderPlugin:           mindreaderPlugin,
+			MindreaderPlugin:           readerPlugin,
 			MetricsAndReadinessManager: metricsAndReadinessManager,
 			RegisterGRPCService: func(server *grpc.Server) error {
 				pbheadinfo.RegisterHeadInfoServer(server, blockStreamServer)
@@ -245,7 +245,7 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 type nodeArgsByRole map[string]string
 
 func buildNodeArguments(logger *zap.Logger, nodeDataDir, nodeConfigFile, nodeRole string, args string) ([]string, error) {
-	// Seems aptos-node does not really like relative path for the config, at least when starting through extractor component,
+	// Seems aptos-node does not really like relative path for the config, at least when starting through reader component,
 	// let's resolve it right away and it will help anyway if the relative path is wrong regarding where we start the actual process.
 	resolvedNodeConfigFile, err := filepath.Abs(nodeConfigFile)
 	if err != nil {
@@ -254,7 +254,7 @@ func buildNodeArguments(logger *zap.Logger, nodeDataDir, nodeConfigFile, nodeRol
 	}
 
 	typeRoles := nodeArgsByRole{
-		"extractor": fmt.Sprintf("--config %s {extra-arg}", resolvedNodeConfigFile),
+		"reader": fmt.Sprintf("--config %s {extra-arg}", resolvedNodeConfigFile),
 	}
 
 	argsString, ok := typeRoles[nodeRole]

@@ -26,7 +26,7 @@ main() {
 
   # Temporary just to ensure I have the right folder structure while testing stuff around,
   # should be removed once properly handled in firehose-aptos core code directly.
-  mkdir -p firehose-data/extractor/data
+  mkdir -p firehose-data/reader/data
 
   exec $sfnear -c $(basename $ROOT).yaml start "$@"
 }

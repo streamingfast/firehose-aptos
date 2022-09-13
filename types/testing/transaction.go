@@ -4,8 +4,9 @@ import (
 	"time"
 
 	"github.com/mitchellh/go-testing-interface"
-	pbaptos "github.com/streamingfast/firehose-aptos/types/pb/aptos/extractor/v1"
+	"github.com/streamingfast/firehose-aptos/types/pb/aptos/extractor/v1"
 	pbtimestamp "github.com/streamingfast/firehose-aptos/types/pb/aptos/util/timestamp"
+
 	"github.com/stretchr/testify/require"
 )
 

@@ -23,15 +23,15 @@ import (
 func init() {
 	launcher.RegisterCommonFlags = func(_ *zap.Logger, cmd *cobra.Command) error {
 		//Common stores configuration flags
-		cmd.Flags().String("common-one-blocks-store-url", OneBlockStoreURL, "[COMMON] Store URL to read/write one-block files, use by extractor, merger")
-		cmd.Flags().String("common-merged-blocks-store-url", MergedBlocksStoreURL, "[COMMON] Store URL where to read/write merged blocks, used by: extractor, merger, firehose.")
-		cmd.Flags().String("common-relayer-addr", RelayerServingAddr, "[COMMON] gRPC endpoint to get real-time blocks, used by: firehose")
+		cmd.Flags().String("common-one-block-store-url", OneBlockStoreURL, "[COMMON] Store URL (with prefix) to read/write one-block files.")
+		cmd.Flags().String("common-merged-blocks-store-url", MergedBlocksStoreURL, "[COMMON] Store URL (with prefix) where to read/write merged blocks.")
+		cmd.Flags().String("common-live-blocks-addr", RelayerServingAddr, "[COMMON] gRPC endpoint to get real-time blocks.")
 
 		cmd.Flags().Bool("common-blocks-cache-enabled", false, FlagDescription(`
 			[COMMON] Use a disk cache to store the blocks data to disk and instead of keeping it in RAM. By enabling this, block's Protobuf content, in bytes,
 			is kept on file system instead of RAM. This is done as soon the block is downloaded from storage. This is a tradeoff between RAM and Disk, if you
 			are going to serve only a handful of concurrent requests, it's suggested to keep is disabled, if you encounter heavy RAM consumption issue, specially
-			by the firehose component, it's definitely a good idea to enable it and configure it properly through the other 'common-blocks-cache-...' flags. The cache is
+			by the Firehose component, it's definitely a good idea to enable it and configure it properly through the other 'common-blocks-cache-...' flags. The cache is
 			split in two portions, one keeping N total bytes of blocks of the most recently used blocks and the other one keeping the N earliest blocks as
 			requested by the various consumers of the cache.
 		`))
@@ -54,7 +54,7 @@ func init() {
 		cmd.Flags().Int64("common-chain-id", -1, FlagDescription(`
 			[COMMON] The chain ID of the network we want to sync with, this is used to ensure we read data from the right network.
 			The flag must be explicitely provided, a negative will be rejected right away with an error. The chain id must be within
-			the numerical boundary of a uint32, used by: extractor, firehose
+			the numerical boundary of a uint32, used by: reader-node, firehose
 		`))
 
 		// Authentication, metering and rate limiter plugins
