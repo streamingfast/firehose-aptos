@@ -13,3 +13,4 @@ for instructions to keep up to date.
 * Renamed the `extractor-node` application to `reader-node`
 * Renamed tools command `debug-deep-mind` flags to `debug-firehose-logs`
 * Renamed all the `extractor-node-*` flags to `reader-node-*`
+* Changed `--log-to-file` default from `true` to `false`
