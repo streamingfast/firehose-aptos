@@ -42,7 +42,7 @@ In all the tests, we added a slight change to `aptos-node` so that it exits righ
 
 ![](./graph_aptos_node_throughput.png)
 
-Here the legend and the actual:
+Here what test cases the legend represent:
 
 - `vanilla read by raw stdin` is `aptos-node` vanilla with [`stdout` to a Go program reading it and then discard it](#stdout-to-a-go-program-reading-it-and-then-discard-it)
 - `vanilla read by blocks stdin` is `aptos-node` vanilla with [`stdout` to a Go program reading it and then discard it](#stdout-to-a-go-program-reading-it-and-then-discard-it)
@@ -50,6 +50,18 @@ Here the legend and the actual:
 - `limited stdout (without proto encoding) read by raw stdin` [`aptos-node` tweaked to only emit `FIRE BLOCK_END` line without Protobuf encoding](#aptos-node-tweaked-to-only-emit-fire-blockend-line-without-protobuf-encoding) is with [`stdout` to a Go program reading it and then discard it](#stdout-to-a-go-program-reading-it-and-then-discard-it)
 
 > This graph does not include the any results for [`stdout` to /dev/null](#stdout-to-devnull) because it was not sampled each second like the others were.
+
+The lines points have been from the `blocks/s` samples emitted by the Golang reading process where a raw sample reported line like:
+
+```log
+#75000 - Blocks 1264 block/s (75001 total), Bytes (Firehose lines) 9680934 bytes/s (819563389 total), Bytes (All lines) 9718042 bytes/s (819617444 total)
+```
+
+The `blocks/s` samples were extracted from results for all blocks using:
+
+```bash
+cat codec/bench/<experiment>.log | grep "block/s" | cut -d ' ' -f 4 | pbcopy
+```
 
 ### Analysis
 
@@ -68,7 +80,7 @@ In this config file:
 - `<workdir>/data/waypoint.txt` is the `devnet` `waypoint.txt` as provided by Aptos
 - `<workdir>/data/genesis.blob` is the `devnet` `genesis.blob` as provided by Aptos
 
-```
+```yaml
 base:
     # Update this value to the location you want the node to store its database
     data_dir: "<workdir>/data"
@@ -113,7 +125,7 @@ In this mode, we tweaked `aptos-node` removing emitting of `FIRE BLOCK_START` an
 
 In this test, we want to check what impact `stdout` has, for example does it creates excessive blocking so that `aptos-node` is throttled? We also eliminate the `base64` encoding trying to see if both measures increase the throughput.
 
-```
+```rust
 diff --git a/ecosystem/sf-indexer/firehose-stream/src/runtime.rs b/ecosystem/sf-indexer/firehose-stream/src/runtime.rs
 index 28fa13d264..e3502b23b3 100644
 --- a/ecosystem/sf-indexer/firehose-stream/src/runtime.rs
@@ -149,7 +161,7 @@ In this mode, we tweaked `aptos-node` removing emitting of `FIRE BLOCK_START` an
 
 In this test, we want to check mainly was is the impact of Protobuf encoding, this will be compared more against previous test which kept Protobuf encoding.
 
-```
+```rust
 diff --git a/ecosystem/sf-indexer/firehose-stream/src/runtime.rs b/ecosystem/sf-indexer/firehose-stream/src/runtime.rs
 index 28fa13d264..077f116dd5 100644
 --- a/ecosystem/sf-indexer/firehose-stream/src/runtime.rs
@@ -219,7 +231,7 @@ We will try to get a measure here `stdout` is mostly discarded right away the re
 
 Actual execution:
 
-```
+```bash
 time RUST_LOG=error STARTING_BLOCK=0 aptos-node --config /Users/maoueh/work/sf/firehose-aptos/devel/devnet/firehose-data/extractor/data/node.yaml > /dev/null
 ```
 
@@ -233,13 +245,13 @@ Code can be seen: https://github.com/streamingfast/firehose-aptos/blob/main/code
 
 Actual execution:
 
-```
+```bash
 go build -o /tmp/bench ./codec/bench && time RUST_LOG=error STARTING_BLOCK=0 aptos-node --config /Users/maoueh/work/sf/firehose-aptos/devel/devnet/firehose-data/extractor/data/node.yaml | /tmp/bench "-" rawStdin | tee codec/bench/results_raw_stdin.log
 ```
 
 The output is in the form:
 
-```
+```log
 ...
 #71016 - Blocks 1040 block/s (71017 total), Bytes (Firehose lines) 10464016 bytes/s (786574108 total), Bytes (All lines) 10014020 bytes/s (786628163 total)
 #72296 - Blocks 1221 block/s (72297 total), Bytes (Firehose lines) 10415570 bytes/s (797022871 total), Bytes (All lines) 9941770 bytes/s (797076926 total)
@@ -250,19 +262,7 @@ Completed
 RUST_LOG=error STARTING_BLOCK=0 aptos-node --config   76.92s user 1.71s system 100% cpu 1:18.37 total
 ```
 
-And we can extract statistics about using StreamingFast's `stats` tool and some bash-fu:
-
-```
-cat codec/bench/results_raw_stdin.log | grep "block/s" | cut -d ' ' -f 4 | stats -u " blocks/s"
-Count: 78
-Range: Min 727.00000 blocks/s - Max 2397.00000 blocks/s
-Sum: 74963.00000 blocks/s
-Average: 961.06410 blocks/s
-Median: 897.00000 blocks/s
-Standard Deviation: 229.74228 blocks/s
-```
-
-In the report section, we kept only `Average` from this metric. The `time` metrics can be obtained by dividing 75000 by amount of it required to reach it.
+The `time` metrics can be obtained by dividing 75000 by amount of it required to reach it.
 
 #### `stdout` to a Go program reading and decoding it through Firehose Console Reader element
 
@@ -272,13 +272,13 @@ Code can be seen: https://github.com/streamingfast/firehose-aptos/blob/main/code
 
 Actual execution:
 
-```
+```bash
 go build -o /tmp/bench ./codec/bench && time RUST_LOG=error STARTING_BLOCK=0 aptos-node --config /Users/maoueh/work/sf/firehose-aptos/devel/devnet/firehose-data/extractor/data/node.yaml | /tmp/bench "-" blocksStdin | tee codec/bench/results_blocks_stdin.log
 ```
 
 The output is in the form:
 
-```
+```log
 ...
 #71016 - Blocks 1040 block/s (71017 total), Bytes (Firehose lines) 10464016 bytes/s (786574108 total), Bytes (All lines) 10014020 bytes/s (786628163 total)
 #72296 - Blocks 1221 block/s (72297 total), Bytes (Firehose lines) 10415570 bytes/s (797022871 total), Bytes (All lines) 9941770 bytes/s (797076926 total)
@@ -289,16 +289,5 @@ Completed
 RUST_LOG=error STARTING_BLOCK=0 aptos-node --config   76.92s user 1.71s system 100% cpu 1:18.37 total
 ```
 
-And we can extract statistics about using StreamingFast's `stats` tool and some bash-fu:
+The `time` metrics can be obtained by dividing 75000 by amount of it required to reach it.
 
-```
-cat codec/bench/results_raw_stdin.log | grep "block/s" | cut -d ' ' -f 4 | stats -u " blocks/s"
-Count: 78
-Range: Min 727.00000 blocks/s - Max 2397.00000 blocks/s
-Sum: 74963.00000 blocks/s
-Average: 961.06410 blocks/s
-Median: 897.00000 blocks/s
-Standard Deviation: 229.74228 blocks/s
-```
-
-In the report section, we kept only `Average` from this metric. The `time` metrics can be obtained by dividing 75000 by amount of it required to reach it.
