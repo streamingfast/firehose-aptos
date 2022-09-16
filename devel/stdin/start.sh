@@ -20,15 +20,11 @@ main() {
 
   set -e
 
-  if [[ ! -f "$1" ]]; then
-    usage_error "Argument <file> must be provided and must exist to be piped in"
-  fi
-
   if [[ $clean == "true" ]]; then
     rm -rf firehose-data &> /dev/null || true
   fi
 
-  exec cat "$file" | $fireaptos -c $(basename $ROOT).yaml start "$@"
+  exec $fireaptos -c $(basename $ROOT).yaml start "$@"
 }
 
 usage_error() {

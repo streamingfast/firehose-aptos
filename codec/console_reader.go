@@ -96,7 +96,7 @@ func (r *ConsoleReader) next() (out *pbaptos.Block, err error) {
 					return nil, lineError(line, err)
 				}
 			} else {
-				r.logger.Warn("received reader node line with but we did not see INIT yet, skipping line", zap.String("prefix", tokens[0]))
+				r.logger.Warn("received Firehose log line but we did not see 'FIRE INIT' yet, skipping", zap.String("prefix", tokens[0]))
 			}
 
 			continue

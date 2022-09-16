@@ -90,7 +90,7 @@ func init() {
 					viper.GetBool("substreams-client-plaintext"),
 				)
 
-				sss := substreamsService.New(
+				sss, err := substreamsService.New(
 					stateStore,
 					"aptos.extractor.v1.Block",
 					viper.GetInt("substreams-sub-request-parallel-jobs"),
@@ -98,6 +98,9 @@ func init() {
 					clientConfig,
 					opts...,
 				)
+				if err != nil {
+					return nil, fmt.Errorf("create substreams service: %w", err)
+				}
 
 				registerServiceExt = sss.Register
 			}

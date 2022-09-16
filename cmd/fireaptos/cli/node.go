@@ -232,9 +232,9 @@ func nodeFactoryFunc(flagPrefix, kind string) func(*launcher.Runtime) (launcher.
 			Operator:                   chainOperator,
 			MindreaderPlugin:           readerPlugin,
 			MetricsAndReadinessManager: metricsAndReadinessManager,
-			RegisterGRPCService: func(server *grpc.Server) error {
-				pbheadinfo.RegisterHeadInfoServer(server, blockStreamServer)
-				pbbstream.RegisterBlockStreamServer(server, blockStreamServer)
+			RegisterGRPCService: func(registrar grpc.ServiceRegistrar) error {
+				pbheadinfo.RegisterHeadInfoServer(registrar, blockStreamServer)
+				pbbstream.RegisterBlockStreamServer(registrar, blockStreamServer)
 
 				return nil
 			},
