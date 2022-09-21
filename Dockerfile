@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.2
 
-ARG APTOS_VERSION=devnet
+ARG APTOS_VERSION=testnet
 
 FROM aptoslab/validator:$APTOS_VERSION as chain
 
