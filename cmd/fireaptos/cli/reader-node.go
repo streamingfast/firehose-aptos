@@ -17,7 +17,6 @@ package cli
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 
@@ -69,18 +68,6 @@ func getReaderLogPlugin(
 		return nil, fmt.Errorf("creating working directory: %w", err)
 	}
 
-	syncStateFile := filepath.Join(workingDir, "sync_state.json")
-
-	// We never close the sync state file but I don't think it's a problem. It's meant
-	// to be ever open so that's not a problem. There is still risk of an abrupt process
-	// closing that would close the file descriptor in the middle of a write. But even there,
-	// we write so less data in bytes that I'm pretty sure the write is going to be done in atomic
-	// fashion in one swift so we are confident that doing how we do it is safe here.
-	syncStateFileWriter, err := os.Create(syncStateFile)
-	if err != nil {
-		return nil, fmt.Errorf("open sync state file for writing: %w", err)
-	}
-
 	consoleReaderFactory := func(lines chan string) (mindreader.ConsolerReader, error) {
 		return codec.NewConsoleReader(appLogger, lines)
 	}
@@ -105,20 +92,13 @@ func getReaderLogPlugin(
 		return nil, fmt.Errorf("new reader plugin: %w", err)
 	}
 
+	syncStateFile := filepath.Join(workingDir, "sync_state.json")
+
 	plugin.OnBlockWritten(func(block *bstream.Block) error {
-		if _, err := syncStateFileWriter.Seek(0, io.SeekStart); err != nil {
-			return fmt.Errorf("reset sync state file to offset 0: %w", err)
-		}
-
-		err := json.NewEncoder(syncStateFileWriter).Encode(readerNodeSyncState{
-			BlockNum: block.Num(),
-		})
-		if err != nil {
-			return fmt.Errorf("encode sync state to file: %w", err)
-		}
-
-		if err := syncStateFileWriter.Sync(); err != nil {
-			return fmt.Errorf("filesystem sync of sync state file: %w", err)
+		// It's much faster to serialized to memory than write to file than trying to be clever and keep the file
+		// open and seek to top of it which was used before. There is a 100x gain and writing the file in one swift.
+		if err := writeNodeSyncState(appLogger, &readerNodeSyncState{BlockNum: block.Num()}, syncStateFile); err != nil {
+			return fmt.Errorf("write node sync state: %w", err)
 		}
 
 		onLastBlockSeen(block.Num())
