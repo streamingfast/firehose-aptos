@@ -11,11 +11,10 @@ require (
 	github.com/streamingfast/cli v0.0.4-0.20220113202443-f7bcefa38f7e
 	github.com/streamingfast/dauth v0.0.0-20220526210215-024098ade521
 	github.com/streamingfast/derr v0.0.0-20220526184630-695c21740145
-	github.com/streamingfast/dgrpc v0.0.0-20220909121013-162e9305bbfc
 	github.com/streamingfast/dlauncher v0.0.0-20220909121534-7a9aa91dbb32
 	github.com/streamingfast/dmetering v0.0.0-20220307162406-37261b4b3de9
 	github.com/streamingfast/dmetrics v0.0.0-20220815204823-5e8917225dab
-	github.com/streamingfast/dstore v0.1.1-0.20220830184623-b0f0cc804743
+	github.com/streamingfast/dstore v0.1.1-0.20220921155016-7a52fdb3fe5f
 	github.com/streamingfast/firehose v0.1.1-0.20220909121738-2f3bc007ea2b
 	github.com/streamingfast/firehose-aptos/types v0.0.0-20220908194130-bfe2d9d84520
 	github.com/streamingfast/logging v0.0.0-20220813175024-b4fbb0e893df
@@ -25,7 +24,7 @@ require (
 	github.com/streamingfast/relayer v0.0.2-0.20220909122435-e67fbc964fd9
 	github.com/streamingfast/sf-tools v0.0.0-20220727183125-3348eaca0e25
 	github.com/streamingfast/shutter v1.5.0
-	github.com/streamingfast/substreams v0.0.21-0.20220909123253-9f44d2ecc609
+	github.com/streamingfast/substreams v0.0.21-0.20220922173147-90021ee49ba5
 	github.com/stretchr/testify v1.8.0
 	go.uber.org/zap v1.21.0
 	golang.org/x/exp v0.0.0-20220907003533-145caa8ea1d0
@@ -117,6 +116,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/streamingfast/atm v0.0.0-20220131151839-18c87005e680 // indirect
 	github.com/streamingfast/dbin v0.0.0-20210809205249-73d5eca35dc5 // indirect
+	github.com/streamingfast/dgrpc v0.0.0-20220909121013-162e9305bbfc // indirect
 	github.com/streamingfast/dtracing v0.0.0-20220305214756-b5c0e8699839 // indirect
 	github.com/streamingfast/jsonpb v0.0.0-20210811021341-3670f0aa02d0 // indirect
 	github.com/streamingfast/opaque v0.0.0-20210811180740-0c01d37ea308 // indirect
