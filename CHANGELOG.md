@@ -8,7 +8,7 @@ for instructions to keep up to date.
 
 #### Flags and environment variables
 
-* Renamed `common-oneblock-store-url` to `common-one-block-store-url` *now used by firehose and relayer apps*
+* Renamed `common-one-blocks-store-url` to `common-one-block-store-url`
 * Renamed `common-relayer-addr` to `common-live-blocks-addr`
 * Renamed the `extractor-node` application to `reader-node`
 * Renamed tools command `debug-deep-mind` flags to `debug-firehose-logs`
