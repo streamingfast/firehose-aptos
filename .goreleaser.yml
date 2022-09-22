@@ -5,6 +5,7 @@ release:
     owner: streamingfast
     name: firehose-aptos
   name_template: '{{.Tag}}'
+  draft: true
 builds:
 - goos:
   - linux
