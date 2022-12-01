@@ -93,8 +93,8 @@ func init() {
 				sss, err := substreamsService.New(
 					stateStore,
 					"aptos.extractor.v1.Block",
-					viper.GetInt("substreams-sub-request-parallel-jobs"),
-					viper.GetInt("substreams-sub-request-block-range-size"),
+					uint64(viper.GetInt("substreams-sub-request-parallel-jobs")),
+					uint64(viper.GetInt("substreams-sub-request-block-range-size")),
 					clientConfig,
 					opts...,
 				)

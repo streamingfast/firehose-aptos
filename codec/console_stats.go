@@ -11,9 +11,9 @@ import (
 
 type consoleReaderStats struct {
 	lastBlock             bstream.BlockRef
-	blockRate             *dmetrics.LocalCounter
-	blockAverageParseTime *dmetrics.LocalCounter
-	transactionRate       *dmetrics.LocalCounter
+	blockRate             *dmetrics.RateCounter
+	blockAverageParseTime *dmetrics.AvgDurationCounter
+	transactionRate       *dmetrics.RateCounter
 
 	cancelPeriodicLogger context.CancelFunc
 }
@@ -22,7 +22,7 @@ func newConsoleReaderStats() *consoleReaderStats {
 	return &consoleReaderStats{
 		lastBlock:             bstream.BlockRefEmpty,
 		blockRate:             dmetrics.NewPerSecondLocalRateCounter("blocks"),
-		blockAverageParseTime: dmetrics.NewAvgPerSecondLocalRateCounter("ms/block"),
+		blockAverageParseTime: dmetrics.NewAvgDurationCounter(5*time.Second, time.Millisecond, "ms/block"),
 		transactionRate:       dmetrics.NewPerSecondLocalRateCounter("trxs"),
 	}
 }
