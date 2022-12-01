@@ -5,8 +5,10 @@ base:
   waypoint:
     from_config: "0:87856349c5948b7543684eed16581694294fc452d40b5552f6423e191edb28d7"
 consensus:
-  max_block_txns: 6000
-  max_block_bytes: 5242880
+  max_sending_block_txns: 2500
+  max_sending_block_bytes: 614400
+  max_receiving_block_txns: 10000
+  max_receiving_block_bytes: 3145728
   max_pruned_blocks_in_mem: 100
   mempool_executed_txn_timeout_ms: 1000
   mempool_txn_pull_timeout_ms: 1000
@@ -200,7 +202,7 @@ storage:
       enable: true
       prune_window: 80000000
       batch_size: 1000
-  target_snapshot_size: 100000
+  buffered_state_target_items: 100000
   max_num_nodes_per_lru_cache_shard: 8192
   rocksdb_configs:
     ledger_db_config:

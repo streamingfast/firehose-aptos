@@ -7,6 +7,7 @@ start:
   flags:
     reader-node-config-file: "config/full_node.yaml"
     reader-node-log-to-zap: false
+    reader-node-debug-firehose-logs: true
     reader-node-genesis-file: "config/genesis.blob"
     reader-node-validator-identity-file: "config/validator-identity.yaml"
     reader-node-vfn-identity-file: "config/vfn-identity.yaml"
