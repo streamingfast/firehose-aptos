@@ -61,7 +61,7 @@ func TestParseFromFile(t *testing.T) {
 		},
 
 		{
-			"genesis with 'chain_id' field name in init",
+			"genesis with chain_id field name in init",
 			[]string{
 				fireInitCustom("aptos-node 0.0.0 aptos 0 0 chain_id 4"),
 

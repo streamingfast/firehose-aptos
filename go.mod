@@ -13,7 +13,7 @@ require (
 	github.com/streamingfast/derr v0.0.0-20221125175206-82e01d420d45
 	github.com/streamingfast/dlauncher v0.0.0-20220909121534-7a9aa91dbb32
 	github.com/streamingfast/dmetering v0.0.0-20220307162406-37261b4b3de9
-	github.com/streamingfast/dmetrics v0.0.0-20221107142404-e88fe183f07d
+	github.com/streamingfast/dmetrics v0.0.0-20221129121022-a1733eca1981
 	github.com/streamingfast/dstore v0.1.1-0.20221118114203-13f4092e3bf0
 	github.com/streamingfast/firehose v0.1.1-0.20221017171248-8fd3adbe7b4d
 	github.com/streamingfast/firehose-aptos/types v0.0.0-20220908194130-bfe2d9d84520

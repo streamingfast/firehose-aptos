@@ -53,9 +53,9 @@ func blocksStdin(_ string) {
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Buffer(make([]byte, 100*1024*1024), 100*1024*1024)
 
-	stdOutBytesCounter := dmetrics.NewLocalRateCounter(time.Second, "bytes")
-	firelogBytesCounter := dmetrics.NewLocalRateCounter(time.Second, "bytes")
-	blockRateCounter := dmetrics.NewLocalRateCounter(time.Second, "block")
+	stdOutBytesCounter := dmetrics.NewPerSecondLocalRateCounter("bytes")
+	firelogBytesCounter := dmetrics.NewPerSecondLocalRateCounter("bytes")
+	blockRateCounter := dmetrics.NewPerSecondLocalRateCounter("block")
 
 	currentHeadBlock := ""
 
@@ -134,9 +134,9 @@ func rawStdin(_ string) {
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Buffer(make([]byte, 100*1024*1024), 100*1024*1024)
 
-	stdOutBytesCounter := dmetrics.NewLocalRateCounter(time.Second, "bytes")
-	firelogBytesCounter := dmetrics.NewLocalRateCounter(time.Second, "bytes")
-	blockRateCounter := dmetrics.NewLocalRateCounter(time.Second, "block")
+	stdOutBytesCounter := dmetrics.NewPerSecondLocalRateCounter("bytes")
+	firelogBytesCounter := dmetrics.NewPerSecondLocalRateCounter("bytes")
+	blockRateCounter := dmetrics.NewPerSecondLocalRateCounter("block")
 
 	currentHeadBlock := ""
 
