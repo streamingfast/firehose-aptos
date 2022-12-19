@@ -24,7 +24,7 @@ require (
 	github.com/streamingfast/relayer v0.0.2-0.20220909122435-e67fbc964fd9
 	github.com/streamingfast/sf-tools v0.0.0-20221129171534-a0708b599ce5
 	github.com/streamingfast/shutter v1.5.0
-	github.com/streamingfast/substreams v0.0.22-0.20221216182418-29e899675201
+	github.com/streamingfast/substreams v0.0.22-0.20221124163831-92cf80c3933a
 	github.com/stretchr/testify v1.8.0
 	go.uber.org/zap v1.21.0
 	golang.org/x/exp v0.0.0-20220907003533-145caa8ea1d0
