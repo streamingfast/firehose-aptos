@@ -36,8 +36,8 @@ func init() {
 			cmd.Flags().Bool("substreams-enabled", false, "Whether to enable substreams")
 			cmd.Flags().Bool("substreams-partial-mode-enabled", false, "Whether to enable partial stores generation support on this instance (usually for internal deployments only)")
 			cmd.Flags().String("substreams-state-store-url", "{data-dir}/localdata", "where substreams state data are stored")
-			cmd.Flags().Uint64("substreams-stores-save-interval", uint64(1_000), "Interval in blocks at which to save store snapshots")     // fixme
-			cmd.Flags().Uint64("substreams-output-cache-save-interval", uint64(100), "Interval in blocks at which to save store snapshots") // fixme
+			cmd.Flags().Uint64("substreams-stores-save-interval", uint64(1_000), "Interval in blocks at which to save store snapshots")       // fixme
+			cmd.Flags().Uint64("substreams-output-cache-save-interval", uint64(1_000), "Interval in blocks at which to save store snapshots") // fixme
 			cmd.Flags().Int("substreams-parallel-subrequest-limit", 4, "number of parallel subrequests substream can make to synchronize its stores")
 			cmd.Flags().String("substreams-client-endpoint", "", "Firehose endpoint for substreams client, if left empty, will default to this current local firehose.")
 			cmd.Flags().String("substreams-client-jwt", "", "JWT for substreams client authentication")
