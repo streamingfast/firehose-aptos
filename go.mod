@@ -7,24 +7,24 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/viper v1.8.1
-	github.com/streamingfast/bstream v0.0.2-0.20221209144659-0fb1074db0f3
+	github.com/streamingfast/bstream v0.0.2-0.20230120170832-6389e61e9d54
 	github.com/streamingfast/cli v0.0.4-0.20220630165922-bc58c6666fc8
 	github.com/streamingfast/dauth v0.0.0-20221027185237-b209f25fa3ff
 	github.com/streamingfast/derr v0.0.0-20221125175206-82e01d420d45
 	github.com/streamingfast/dlauncher v0.0.0-20220909121534-7a9aa91dbb32
 	github.com/streamingfast/dmetering v0.0.0-20220307162406-37261b4b3de9
 	github.com/streamingfast/dmetrics v0.0.0-20221129121022-a1733eca1981
-	github.com/streamingfast/dstore v0.1.1-0.20221206141230-6d7bdda8687f
-	github.com/streamingfast/firehose v0.1.1-0.20221017171248-8fd3adbe7b4d
+	github.com/streamingfast/dstore v0.1.1-0.20230117140537-2c870a0d4523
+	github.com/streamingfast/firehose v0.1.1-0.20221101130227-3a0b1980aa0b
 	github.com/streamingfast/firehose-aptos/types v0.0.0-20220908194130-bfe2d9d84520
 	github.com/streamingfast/logging v0.0.0-20220813175024-b4fbb0e893df
-	github.com/streamingfast/merger v0.0.3-0.20220909122033-9ca15beb25f5
+	github.com/streamingfast/merger v0.0.3-0.20221123202507-445dfd357868
 	github.com/streamingfast/node-manager v0.0.2-0.20220912235129-6c08463b0c01
 	github.com/streamingfast/pbgo v0.0.6-0.20221014191646-3a05d7bc30c8
 	github.com/streamingfast/relayer v0.0.2-0.20220909122435-e67fbc964fd9
 	github.com/streamingfast/sf-tools v0.0.0-20221129171534-a0708b599ce5
 	github.com/streamingfast/shutter v1.5.0
-	github.com/streamingfast/substreams v0.0.22-0.20221216182418-29e899675201
+	github.com/streamingfast/substreams v0.1.0
 	github.com/stretchr/testify v1.8.0
 	go.uber.org/zap v1.21.0
 	golang.org/x/exp v0.0.0-20220907003533-145caa8ea1d0
