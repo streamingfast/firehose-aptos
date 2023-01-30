@@ -8,9 +8,14 @@ for instructions to keep up to date.
 
 ### Changed
 
-* Updated `--substreams-output-cache-save-interval` default value to 1000.
+* **Breaking** Config value `substreams-stores-save-interval` and `substreams-output-cache-save-interval` have been merged together as a single value to avoid potential bugs that would arise when the value is different for those two. The new configuration value is called `substreams-cache-save-interval`.
 
-    > **Warning** The `--substreams-output-cache-save-interval` and `--substreams-stores-save-interval` flags must be the exact same value to avoid bogus behavior with Substreams engine. In a future update, we are going to merge those two flags together in a single flag to avoid any mistake. For now, ensure the two value are identical.
+    *  To migrate, remove usage of `substreams-stores-save-interval: <number>` and `substreams-output-cache-save-interval: <number>` if defined in your config file and replace with `substreams-cache-save-
+interval: <number>`, if you had two different value before, pick the biggest of the two as the new value to put. We are currently setting to `1000` for Ethereum Mainnet.
+
+* Updated to Substreams `v0.2.0`, please refer to [release page](https://github.com/streamingfast/substreams/releases/tag/v0.2.0) for further info about Substreams changes.
+
+* Updated `--substreams-output-cache-save-interval` default value to 1000.
 
 * Updated to Substreams `v0.1.0`, please refer to [release page](https://github.com/streamingfast/substreams/releases/tag/v0.1.0) for further info about Substreams changes.
 

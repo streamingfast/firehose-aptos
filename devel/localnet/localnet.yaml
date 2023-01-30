@@ -20,7 +20,6 @@ start:
     substreams-client-endpoint: "localhost:18015"
     substreams-client-plaintext: true
     substreams-partial-mode-enabled: true
-    substreams-sub-request-block-range-size: 10000
-    substreams-output-cache-save-interval: 100
-    substreams-stores-save-interval: 1000
+    substreams-sub-request-block-range-size: 25000
+    substreams-cache-save-interval: 1000
     substreams-sub-request-parallel-jobs: 2
