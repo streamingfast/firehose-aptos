@@ -63,5 +63,6 @@ const (
 	// Data storage default locations
 	BlocksCacheDirectory string = "file://{data-dir}/storage/blocks-cache"
 	MergedBlocksStoreURL string = "file://{data-dir}/storage/merged-blocks"
+	ForkedBlocksStoreURL string = "file://{data-dir}/storage/forked-blocks"
 	OneBlockStoreURL     string = "file://{data-dir}/storage/one-blocks"
 )

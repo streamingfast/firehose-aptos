@@ -43,3 +43,9 @@ interval: <number>`, if you had two different value before, pick the biggest of 
 * Renamed tools command `debug-deep-mind` flags to `debug-firehose-logs`
 * Renamed all the `extractor-node-*` flags to `reader-node-*`
 * Changed `--log-to-file` default from `true` to `false`
+
+## v0.2.1
+
+#### Flags and environment variables
+
+* Added `common-forked-blocks-store-url`
