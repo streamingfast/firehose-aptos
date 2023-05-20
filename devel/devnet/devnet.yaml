@@ -14,10 +14,11 @@ start:
     firehose-real-time-tolerance: 999999999s
     relayer-max-source-latency: 999999999s
 
+    common-live-blocks-addr: ""
     substreams-enabled: true
-    substreams-client-endpoint: "localhost:18015"
+    substreams-tier2: false
+    substreams-client-endpoint: ""
     substreams-client-plaintext: true
-    substreams-partial-mode-enabled: true
     substreams-sub-request-block-range-size: 25000
     substreams-cache-save-interval: 1000
     substreams-sub-request-parallel-jobs: 2
